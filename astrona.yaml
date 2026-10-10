@@ -1,8 +1,9 @@
-# Preparation scaffold. Technical pages stay draft until authoring and review.
+# Reading-only course. YAML assessments are registered separately in assessments/index.yaml.
 training:
   id: ATS027
   title: 'CKAD: Application Design and Build'
-  description: Preparation scaffold for Application Design and Build. Lessons and environments are planned.
+  description: Detailed reading lessons and reusable YAML knowledge checks covering the CKAD domain. No
+    new labs or playgrounds. Technical content remains draft for review.
   certification:
     name: Certified Kubernetes Application Developer
     code: CKAD
@@ -17,7 +18,7 @@ training:
 modules:
 - id: module-intro
   title: Introduction
-  description: Planned introduction and authoring status.
+  description: Audience, learning method, reading requirements and authoring process.
   content:
   - type: reading
     title: Introduction
@@ -33,41 +34,114 @@ modules:
     path: sections/intro/course-03-how-this-course-is-made.md
 - id: module-010
   title: Define, build and modify container images
-  description: Planned coverage of this curriculum objective.
+  description: Developed explanations and application reasoning for Define, build and modify container
+    images.
+  draft: true
   content:
-  - type: reading
-    title: Section Overview
-    path: sections/section-010/README.md
   - type: reading
     title: Define, build and modify container images
+    path: sections/section-010/README.md
+  - type: reading
+    title: Image Identity And Distribution
     path: sections/section-010/module-01/course.md
+  - type: reading
+    title: Layers, Tags And Digests
+    path: sections/section-010/module-01/course-01-layers-tags-and-digests.md
+  - type: reading
+    title: From Build To Image Pull
+    path: sections/section-010/module-01/course-02-from-build-to-image-pull.md
+  - type: reading
+    title: Summary
+    path: sections/section-010/module-01/course-03-summary.md
+  - type: reading
+    title: The Image Build And Runtime Contract
+    path: sections/section-010/module-02/course.md
+  - type: reading
+    title: Building An Image With A Clear Runtime Contract
+    path: sections/section-010/module-02/course-01-building-an-image-with-a-clear-runtime-contract.md
+  - type: reading
+    title: Summary
+    path: sections/section-010/module-02/course-02-summary.md
 - id: module-020
   title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
-  description: Planned coverage of this curriculum objective.
+  description: Developed explanations and application reasoning for Choose and use the right workload
+    resource (Deployment, DaemonSet, CronJob, etc.).
+  draft: true
   content:
-  - type: reading
-    title: Section Overview
-    path: sections/section-020/README.md
   - type: reading
     title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
+    path: sections/section-020/README.md
+  - type: reading
+    title: Controllers For Continuous Applications
     path: sections/section-020/module-01/course.md
+  - type: reading
+    title: Managing Long-Running Workloads
+    path: sections/section-020/module-01/course-01-managing-long-running-workloads.md
+  - type: reading
+    title: Choosing Deployments, DaemonSets And StatefulSets
+    path: sections/section-020/module-01/course-02-choosing-deployments-daemonsets-and-statefulsets.md
+  - type: reading
+    title: Summary
+    path: sections/section-020/module-01/course-03-summary.md
+  - type: reading
+    title: Finite And Scheduled Application Work
+    path: sections/section-020/module-02/course.md
+  - type: reading
+    title: Jobs, Retries And Scheduled Work
+    path: sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
+  - type: reading
+    title: Summary
+    path: sections/section-020/module-02/course-02-summary.md
 - id: module-030
   title: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
-  description: Planned coverage of this curriculum objective.
+  description: Developed explanations and application reasoning for Understand multi-container Pod design
+    patterns (e.g. sidecar, init and others).
+  draft: true
   content:
-  - type: reading
-    title: Section Overview
-    path: sections/section-030/README.md
   - type: reading
     title: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
+    path: sections/section-030/README.md
+  - type: reading
+    title: Initialization And Supporting Containers
     path: sections/section-030/module-01/course.md
+  - type: reading
+    title: Init Containers And Sidecar Patterns
+    path: sections/section-030/module-01/course-01-init-containers-and-sidecar-patterns.md
+  - type: reading
+    title: Sharing Pod Resources Without Sharing Every Assumption
+    path: sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
+  - type: reading
+    title: Summary
+    path: sections/section-030/module-01/course-03-summary.md
 - id: module-040
   title: Utilize persistent and ephemeral volumes
-  description: Planned coverage of this curriculum objective.
+  description: Developed explanations and application reasoning for Utilize persistent and ephemeral volumes.
+  draft: true
   content:
   - type: reading
-    title: Section Overview
+    title: Utilize persistent and ephemeral volumes
     path: sections/section-040/README.md
   - type: reading
-    title: Utilize persistent and ephemeral volumes
+    title: Volume Lifetime And Provisioning
     path: sections/section-040/module-01/course.md
+  - type: reading
+    title: Storage Lifecycles And Claims
+    path: sections/section-040/module-01/course-01-storage-lifecycles-and-claims.md
+  - type: reading
+    title: Provisioning, Classes And Drivers
+    path: sections/section-040/module-01/course-02-provisioning-classes-and-drivers.md
+  - type: reading
+    title: Summary
+    path: sections/section-040/module-01/course-03-summary.md
+  - type: reading
+    title: Access Modes And Data Retention
+    path: sections/section-040/module-02/course.md
+  - type: reading
+    title: Access Modes And Data Presentation
+    path: sections/section-040/module-02/course-01-access-modes-and-data-presentation.md
+  - type: reading
+    title: Reclaim Policies And Recovery
+    path: sections/section-040/module-02/course-02-reclaim-policies-and-recovery.md
+  - type: reading
+    title: Summary
+    path: sections/section-040/module-02/course-03-summary.md

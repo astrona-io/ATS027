@@ -1,18 +1,21 @@
-# ATS027 — CKAD: Application Design and Build
+# Application Design and Build (ATS027)
 
-Preparation for the **Application Design and Build** domain of **Certified Kubernetes Application Developer (CKAD)**.
-The published domain weight is **20%**. This repository belongs to
-the [ATP006 training path](https://github.com/astrona-io/ATP006).
+Certified Kubernetes Application Developer (CKAD): Application Design and Build, worth 20% of the official curriculum. This course belongs to ATP006.
 
-**Status:** Preparation scaffold; content authoring has not started.
+Developed reading lessons explain configuration, component responsibility, worked reasoning and failure limits. Every section has an introduction, and every module ends with a summary. Reusable YAML knowledge checks are indexed separately. Technical content remains draft.
 
-The initial commit reserves the curriculum structure. Lessons, playgrounds,
-labs and assessments are planned and are not ready for learner use.
+## Course Outline
 
-See [CURRICULUM.md](CURRICULUM.md) for the objective map and authoring checklist,
-[astrona.yaml](astrona.yaml) for the course manifest, and
-[CLAUDE.md](CLAUDE.md) for writing and environment rules.
+| Section / module | Module | Teaching lessons |
+| --- | --- | --- |
+| 010 / 01 | Image Identity And Distribution | Layers, Tags And Digests; From Build To Image Pull |
+| 010 / 02 | The Image Build And Runtime Contract | Building An Image With A Clear Runtime Contract |
+| 020 / 01 | Controllers For Continuous Applications | Managing Long-Running Workloads; Choosing Deployments, DaemonSets And StatefulSets |
+| 020 / 02 | Finite And Scheduled Application Work | Jobs, Retries And Scheduled Work |
+| 030 / 01 | Initialization And Supporting Containers | Init Containers And Sidecar Patterns; Sharing Pod Resources Without Sharing Every Assumption |
+| 040 / 01 | Volume Lifetime And Provisioning | Storage Lifecycles And Claims; Provisioning, Classes And Drivers |
+| 040 / 02 | Access Modes And Data Retention | Access Modes And Data Presentation; Reclaim Policies And Recovery |
 
-Curriculum source: [official CKAD page](https://training.linuxfoundation.org/certification/certified-kubernetes-application-developer-ckad/), checked 2026-10-10.
-License: [Apache-2.0](LICENSE). Curriculum objectives retain attribution to
-The Linux Foundation and CNCF; see [CNCF curriculum licensing](https://github.com/cncf/curriculum).
+## Author Review
+
+The [curriculum map](CURRICULUM.md) records objective coverage. [Sources](SOURCES.md) support author review, and [assessment documentation](ASSESSMENTS.md) describes the reusable YAML contract. No runtime is required or claimed, and no new labs or playgrounds are included.

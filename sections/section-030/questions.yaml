@@ -1,0 +1,111 @@
+schema_version: 1
+kind: question_bank
+id: ats027-section-030
+course_id: ATS027
+exam_code: CKAD
+status: draft
+provenance: Original practice material; not official examination questions.
+scope:
+  type: section
+  id: section-030
+  title: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
+placement:
+  position: after
+  reading: sections/section-030/module-01/course-03-summary.md
+questions:
+- id: ats027-section-030-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Distinguish initialization from continuing assistance.
+  source_readings:
+  - sections/section-030/module-01/course-01-init-containers-and-sidecar-patterns.md
+  prompt: A bounded preparation task must finish before application startup. Which container role fits?
+  options:
+  - id: a
+    text: An ordinary long-running helper that never finishes
+    explanation: A continuing helper has different lifecycle behavior from bounded initialization.
+  - id: b
+    text: A second independent Deployment
+    explanation: A separate workload does not express the same Pod startup dependency by itself.
+  - id: c
+    text: A regular init container
+    explanation: Regular init containers must complete before ordinary application containers proceed.
+  correct_option: c
+  explanation: Regular init containers must complete before ordinary application containers proceed.
+- id: ats027-section-030-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain native sidecar startup and shutdown.
+  source_readings:
+  - sections/section-030/module-01/course-01-init-containers-and-sidecar-patterns.md
+  prompt: How is a native continuing sidecar represented in the described Kubernetes model?
+  options:
+  - id: a
+    text: A new Kubernetes resource kind named Sidecar
+    explanation: Sidecar is a pattern and lifecycle representation, not a standalone resource kind.
+  - id: b
+    text: A restartable init container with restartPolicy Always
+    explanation: That representation gives a continuing helper its supported native sidecar lifecycle.
+  - id: c
+    text: An init task required to terminate successfully before anything else starts
+    explanation: That describes ordinary bounded initialization rather than a continuing helper.
+  correct_option: b
+  explanation: That representation gives a continuing helper its supported native sidecar lifecycle.
+- id: ats027-section-030-q03
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Identify shared network and volume relationships.
+  source_readings:
+  - sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
+  prompt: Two containers in the same Pod need to exchange files. What must be declared?
+  options:
+  - id: a
+    text: A suitable volume mounted in both containers
+    explanation: Ordinary image filesystems are separate; shared mounts provide intentional file exchange.
+  - id: b
+    text: Only the same Pod name
+    explanation: Grouping containers does not merge their image filesystems.
+  - id: c
+    text: Two different Service ports
+    explanation: Service ports do not create shared storage.
+  correct_option: a
+  explanation: Ordinary image filesystems are separate; shared mounts provide intentional file exchange.
+- id: ats027-section-030-q04
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Identify shared network and volume relationships.
+  source_readings:
+  - sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
+  prompt: Two containers both bind the same port on the same address in their shared Pod network. What
+    can happen?
+  options:
+  - id: a
+    text: Each receives an independent Pod IP automatically
+    explanation: Ordinary containers in a Pod share its network identity.
+  - id: b
+    text: Kubernetes automatically rewrites one listening port
+    explanation: The platform does not universally change application listeners to avoid conflicts.
+  - id: c
+    text: A listener conflict
+    explanation: The shared network namespace makes the address and port relationship shared.
+  correct_option: c
+  explanation: The shared network namespace makes the address and port relationship shared.
+- id: ats027-section-030-q05
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Choose a multi-container pattern for a real dependency.
+  source_readings:
+  - sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
+  prompt: Which need most strongly supports placing a helper beside each application replica in one Pod?
+  options:
+  - id: a
+    text: A desire to skip helper resource accounting
+    explanation: Supporting containers still contribute to the workload's resource needs.
+  - id: b
+    text: A local shared-state and lifecycle dependency
+    explanation: Shared placement and volumes can express a helper tied to each application instance.
+  - id: c
+    text: A requirement for completely independent scaling and rollout
+    explanation: Independent lifecycles often support separate workloads.
+  correct_option: b
+  explanation: Shared placement and volumes can express a helper tied to each application instance.
