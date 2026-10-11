@@ -9,6 +9,10 @@ Finite work should produce completion evidence rather than remain as a continuou
 
 Use the module playground and its private kubeconfig. The context check below prevents commands from being directed at an unrelated cluster. The helper retries a command for a bounded interval after controller or policy changes; it cannot turn a persistent failure into success. Read the actual errors when the interval expires.
 
+A successful process exit contributes to Job completion, while a continuously running process would prevent finite work from finishing. Inspect the Job's completion and retry settings independently of the CronJob schedule.
+
+The practice schedule is suspended so it does not create repeated background work. Creating one Job from its template is a deliberate execution with its own lifecycle. That execution can still produce external effects, so real scheduled applications need safe repeated writes and an overlap policy matched to their duration.
+
 <!-- astrona:playground:renew -->
 
 For a timed catalog session, renew this module before continuing. Skip renewal for an untimed local author run:

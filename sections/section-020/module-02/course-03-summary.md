@@ -9,4 +9,6 @@ Jobs manage successful completion, while CronJobs create Jobs at scheduled times
 
 Scheduled and retried work must tolerate repeated attempts and imperfect timing. Overlap policies do not provide a universal exact-once guarantee, and cleanup of execution records is separate from retention of application output.
 
+A Job manages completion, while a CronJob manages scheduled creation of Jobs. Retry budgets, active deadlines, overlap policy and idempotence protect different parts of finite work and cannot substitute for one another.
+
 <!-- astrona:playground:destroy -->

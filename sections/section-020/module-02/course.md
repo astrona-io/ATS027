@@ -5,7 +5,7 @@ exam_objectives:
 ---
 # Finite And Scheduled Application Work
 
-This module connects intended application behavior to declared resources and observed conditions.
+A report generator should exit after writing its output, while the `probe` web server should keep accepting requests. A Job tracks successful completion for the first case. A Deployment maintains continuous replicas for the second.
 
 ## Learning Goals
 
