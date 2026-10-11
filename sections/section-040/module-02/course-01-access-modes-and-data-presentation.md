@@ -5,6 +5,22 @@ exam_objectives:
 ---
 # Access Modes And Data Presentation
 
+Two Pods on the same node may use a ReadWriteOnce volume, even though its name sounds like a single-Pod limit. Access mode describes a storage access constraint, not an application lock. Separate node access from concurrent writers.
+
+## Learning objectives
+
+- Interpret volume access modes at the node and Pod boundaries.
+- Distinguish filesystem presentation from raw block presentation.
+- Explain why storage access does not serialize application writes.
+
+## Before you start
+
+Use a shell on your own machine with the module playground running. A Pod is Kubernetes's unit for running one or more containers together. The environment provides the `probe` Deployment, which maintains application Pods, and the `starfleet` namespace, which groups these objects.
+
+Read-only commands below use kubectl, the Kubernetes command-line tool. Select the private kubeconfig: the file that identifies this environment's cluster and credentials. The commands do not change the application.
+
+## Access Modes and Data Presentation
+
 Two `probe` Pods need access to stored reports. Access modes describe supported mounting arrangements, not the application's transaction rules. ReadWriteOnce allows read-write mounting by one node, which can include several Pods on that node. It does not universally mean one Pod.
 
 ReadOnlyMany supports read-only mounting by many nodes. ReadWriteMany supports read-write mounting by many nodes where the storage implementation provides it. ReadWriteOncePod restricts a supported volume to a single Pod and requires compatible Container Storage Interface (CSI) support. Not every driver supports every access mode.
@@ -32,6 +48,43 @@ Filesystem mode presents mounted directories and files. Block mode presents a ra
 Capacity, performance and availability also differ from access mode. A share supporting many writers can still have insufficient throughput. A volume allowing one node can be attachable in a restricted zone. A large volume can retain data but still depend on one failure-prone device.
 
 A complete storage decision states the consumers, concurrency model, presentation, topology and recovery requirements. Then compare those needs with the supported class and driver behavior. This avoids treating one access-mode abbreviation as a full specification of safe application storage.
+
+## Inspect the mechanism
+
+ReadWriteOnce permits read-write mounting by one node under the backend's supported semantics. It is not a promise that only one process or Pod writes. ReadWriteOncePod provides the stricter single-Pod access contract where the supported CSI driver and cluster features provide it. ReadWriteMany describes supported read-write access by multiple nodes, not safety for arbitrary shared-file application logic.
+
+Volume mode addresses another question. Filesystem mode exposes files through a mounted filesystem; Block mode exposes a raw block device through the supported device mapping. An application expecting directory paths cannot use a block presentation as though it already had files. Inspect mode and backend capability alongside access modes before changing the application.
+
+```mermaid
+flowchart TB
+    C["Claim access mode"] --> B["Backend capability"]
+    C --> N["Eligible mounting scope"]
+    V["Volume mode"] --> F["Filesystem or block presentation"]
+    N --> A["Application access"]
+    F --> A
+    B --> A
+```
+
+Mounting scope and data presentation constrain access, while concurrency correctness remains an application responsibility.
+
+<!-- astrona:playground:renew -->
+
+Select the private cluster connection and inspect the live state from your host shell:
+
+```sh
+export KUBECONFIG="$(astrona kubeconfig ats-027-playground-040-02)"
+if test "$(kubectl config current-context)" = "kind-astro-ats-027-playground-040-02"; then
+  kubectl -n starfleet get persistentvolumeclaims -o yaml
+  kubectl get persistentvolumes -o yaml
+  kubectl get storageclasses
+else
+  printf "Select this module's private kubeconfig before continuing.\n" >&2
+fi
+```
+
+Read `accessModes` and `volumeMode` on any claims and bound volumes. The baseline can have no claims yet, so an empty list does not demonstrate or disprove a particular access mode. Availability of a StorageClass does not mean its provisioner supports every requested mode. The read-only inspection establishes what was actually requested and bound.
+
+You can now distinguish mounting permission from safe concurrent use. A valid access mode still requires compatible backend support and an application that handles shared data correctly.
 
 ## Common pitfalls
 

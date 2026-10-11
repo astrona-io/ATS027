@@ -9,6 +9,10 @@ Access modes and reclaim policy describe different storage responsibilities. You
 
 Use the module playground and its private kubeconfig. The context check below prevents commands from being directed at an unrelated cluster. The helper retries a command for a bounded interval after controller or policy changes; it cannot turn a persistent failure into success. Read the actual errors when the interval expires.
 
+The observed access mode describes a supported mounting arrangement. ReadWriteOnce can permit several Pods on one node; it does not serialize their writes. Compare the consumer pattern with the backend's actual capabilities.
+
+Changing reclaim policy affects what follows claim release and is a data lifecycle decision. The exercise inspects and adjusts that policy without deleting the important claim. Retain preserves an opportunity for manual recovery; it neither creates a backup nor automatically makes old data available to a new application.
+
 <!-- astrona:playground:renew -->
 
 For a timed catalog session, renew this module before continuing. Skip renewal for an untimed local author run:

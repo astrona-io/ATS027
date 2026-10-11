@@ -5,7 +5,7 @@ exam_objectives:
 ---
 # Access Modes And Data Retention
 
-This module connects intended application behavior to declared resources and observed conditions.
+Two Pods on the same node may use a ReadWriteOnce volume, even though its name sounds like a single-Pod limit. Access mode describes a storage access constraint, not an application lock. Separate node access from concurrent writers.
 
 ## Learning Goals
 
