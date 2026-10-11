@@ -19,3 +19,5 @@ Each module begins with its goals and ends with a summary. Reusable YAML knowled
 - Distinguish node access from application concurrency.
 - Predict claim and volume deletion consequences.
 - Separate persistent availability from backup and recovery.
+
+Each module pairs its concept readings with a guided practical sequence in an isolated playground. Finish the practice and closing summary before moving on. The YAML knowledge checks remain separate from the environment lifecycle.

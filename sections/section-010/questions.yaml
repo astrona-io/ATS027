@@ -11,7 +11,7 @@ scope:
   title: Define, build and modify container images
 placement:
   position: after
-  reading: sections/section-010/module-02/course-02-summary.md
+  reading: sections/section-010/module-02/course-03-summary.md
 questions:
 - id: ats027-section-010-q01
   type: single_choice

@@ -19,3 +19,5 @@ Each module begins with its goals and ends with a summary. Reusable YAML knowled
 - Explain completions, parallelism and retries.
 - Compare CronJob overlap policies.
 - Evaluate deadlines, idempotence and cleanup.
+
+Each module pairs its concept readings with a guided practical sequence in an isolated playground. Finish the practice and closing summary before moving on. The YAML knowledge checks remain separate from the environment lifecycle.

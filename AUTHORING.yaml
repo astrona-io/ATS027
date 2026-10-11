@@ -1,5 +1,5 @@
 version: 1
-approval: CKAD requested 2026-10-11; established reading-only scope
+approval: CKAD playgrounds and guided practice requested 2026-10-12; no new graded labs.
 course:
   id: ATS027
   certification:
@@ -14,7 +14,7 @@ course:
     - Understand multi-container Pod design patterns (e.g. sidecar, init and others)
     - Utilize persistent and ephemeral volumes
 defaults:
-  playground: false
+  playground: true
   module_lab: false
   capstone: false
   section_quiz: true
@@ -37,13 +37,18 @@ sections:
     outline:
     - Layers, Tags And Digests
     - From Build To Image Pull
-    playground: false
+    - Inspect Image References And Running Content Identity
+    playground: true
     module_lab: false
     sources:
     - reading: sections/section-010/module-01/course-01-layers-tags-and-digests.md
       adapted_from: ATS037/sections/section-040/module-02/course-01-layers-tags-and-digests.md
     - reading: sections/section-010/module-01/course-02-from-build-to-image-pull.md
       adapted_from: ATS037/sections/section-040/module-02/course-02-from-build-to-image-pull.md
+    - reading: sections/section-010/module-01/course-03-guided-practice.md
+      adapted_from: null
+    practice_readings:
+    - sections/section-010/module-01/course-03-guided-practice.md
   - id: module-02
     title: The Image Build And Runtime Contract
     objectives:
@@ -53,11 +58,16 @@ sections:
     - Evaluate command overrides and process permissions.
     outline:
     - Building An Image With A Clear Runtime Contract
-    playground: false
+    - Build And Load A Non-Root Application Image
+    playground: true
     module_lab: false
     sources:
     - reading: sections/section-010/module-02/course-01-building-an-image-with-a-clear-runtime-contract.md
       adapted_from: null
+    - reading: sections/section-010/module-02/course-02-guided-practice.md
+      adapted_from: null
+    practice_readings:
+    - sections/section-010/module-02/course-02-guided-practice.md
 - id: section-020
   title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
   curriculum_item: Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
@@ -74,13 +84,18 @@ sections:
     outline:
     - Managing Long-Running Workloads
     - Choosing Deployments, DaemonSets And StatefulSets
-    playground: false
+    - Compare Deployment And DaemonSet Ownership
+    playground: true
     module_lab: false
     sources:
     - reading: sections/section-020/module-01/course-01-managing-long-running-workloads.md
       adapted_from: ATS037/sections/section-010/module-04/course-01-managing-long-running-workloads.md
     - reading: sections/section-020/module-01/course-02-choosing-deployments-daemonsets-and-statefulsets.md
       adapted_from: null
+    - reading: sections/section-020/module-01/course-03-guided-practice.md
+      adapted_from: null
+    practice_readings:
+    - sections/section-020/module-01/course-03-guided-practice.md
   - id: module-02
     title: Finite And Scheduled Application Work
     objectives:
@@ -90,11 +105,16 @@ sections:
     - Evaluate deadlines, idempotence and cleanup.
     outline:
     - Jobs, Retries And Scheduled Work
-    playground: false
+    - Complete A Job And Trigger Scheduled Work Deliberately
+    playground: true
     module_lab: false
     sources:
     - reading: sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
       adapted_from: null
+    - reading: sections/section-020/module-02/course-02-guided-practice.md
+      adapted_from: null
+    practice_readings:
+    - sections/section-020/module-02/course-02-guided-practice.md
 - id: section-030
   title: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
   curriculum_item: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
@@ -111,13 +131,18 @@ sections:
     outline:
     - Init Containers And Sidecar Patterns
     - Sharing Pod Resources Without Sharing Every Assumption
-    playground: false
+    - Observe Initialization And Shared Pod Storage
+    playground: true
     module_lab: false
     sources:
     - reading: sections/section-030/module-01/course-01-init-containers-and-sidecar-patterns.md
       adapted_from: ATS037/sections/section-040/module-03/course-02-init-containers-and-sidecar-patterns.md
     - reading: sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
       adapted_from: null
+    - reading: sections/section-030/module-01/course-03-guided-practice.md
+      adapted_from: null
+    practice_readings:
+    - sections/section-030/module-01/course-03-guided-practice.md
 - id: section-040
   title: Utilize persistent and ephemeral volumes
   curriculum_item: Utilize persistent and ephemeral volumes
@@ -134,13 +159,18 @@ sections:
     outline:
     - Storage Lifecycles And Claims
     - Provisioning, Classes And Drivers
-    playground: false
+    - Compare Pod-Lifetime And Claim-Lifetime Data
+    playground: true
     module_lab: false
     sources:
     - reading: sections/section-040/module-01/course-01-storage-lifecycles-and-claims.md
       adapted_from: ATS038/sections/section-040/module-01/course-01-storage-lifecycles-and-claims.md
     - reading: sections/section-040/module-01/course-02-provisioning-classes-and-drivers.md
       adapted_from: ATS038/sections/section-040/module-01/course-02-provisioning-classes-and-drivers.md
+    - reading: sections/section-040/module-01/course-03-guided-practice.md
+      adapted_from: null
+    practice_readings:
+    - sections/section-040/module-01/course-03-guided-practice.md
   - id: module-02
     title: Access Modes And Data Retention
     objectives:
@@ -151,10 +181,15 @@ sections:
     outline:
     - Access Modes And Data Presentation
     - Reclaim Policies And Recovery
-    playground: false
+    - Inspect Access Modes And Change Reclaim Policy Safely
+    playground: true
     module_lab: false
     sources:
     - reading: sections/section-040/module-02/course-01-access-modes-and-data-presentation.md
       adapted_from: ATS038/sections/section-040/module-02/course-01-access-modes-and-data-presentation.md
     - reading: sections/section-040/module-02/course-02-reclaim-policies-and-recovery.md
       adapted_from: ATS038/sections/section-040/module-02/course-02-reclaim-policies-and-recovery.md
+    - reading: sections/section-040/module-02/course-03-guided-practice.md
+      adapted_from: null
+    practice_readings:
+    - sections/section-040/module-02/course-03-guided-practice.md

@@ -5,7 +5,7 @@ exam_objectives:
 ---
 # The Image Build And Runtime Contract
 
-This module develops the Image Build And Runtime Contract. It connects the intended application behavior to declared resources and observed conditions.
+This module connects intended application behavior to declared resources and observed conditions.
 
 ## Learning Goals
 
@@ -16,9 +16,14 @@ This module develops the Image Build And Runtime Contract. It connects the inten
 
 ## Before You Start
 
-Examples describe system behavior. No runtime is required. Read each field or diagnostic name as part of the stated contract.
+Use the module playground for guided practice. It provides an isolated kind cluster and the declared starting fixtures. You need the Astrona command-line tool, kubectl and a working Podman engine; selected exercises also use Helm, curl or OpenSSL. Keep the module's private kubeconfig selected when running application commands.
 
 ## Reading Order
 
 1. Building An Image With A Clear Runtime Contract
-2. Summary
+2. Build And Load A Non-Root Application Image
+3. Summary
+
+The playground provides the initial state for the guided practice. Keep it open while following the practical steps.
+
+<!-- astrona:playground -->
