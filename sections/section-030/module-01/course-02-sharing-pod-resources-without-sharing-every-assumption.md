@@ -5,6 +5,22 @@ exam_objectives:
 ---
 # Sharing Pod Resources Without Sharing Every Assumption
 
+Two containers can reach the same Pod-local listener while failing to see each other's files. Pod networking is shared, but image filesystems remain separate. File exchange needs a volume mounted into both containers.
+
+## Learning objectives
+
+- Distinguish shared network identity from separate container filesystems.
+- Explain volume lifetime during container restart and Pod replacement.
+- Evaluate readiness and resource requirements for supporting containers.
+
+## Before you start
+
+Use a shell on your own machine with the module playground running. A Pod is Kubernetes's unit for running one or more containers together. The environment provides the `probe` Deployment, which maintains application Pods, and the `starfleet` namespace, which groups these objects.
+
+Read-only commands below use kubectl, the Kubernetes command-line tool. Select the private kubeconfig: the file that identifies this environment's cluster and credentials. The commands do not change the application.
+
+## Sharing Pod Resources Without Sharing Every Assumption
+
 A multi-container Pod groups containers that need a shared scheduling and lifecycle context. Its containers run on the same node, use the Pod network and can mount declared volumes. Grouping unrelated services into one Pod merely because they communicate makes their placement and replacement dependent without necessarily providing a useful design benefit.
 
 ## Shared Network, Separate Processes
@@ -36,6 +52,40 @@ A shared volume's lifetime can differ from either container's process lifetime. 
 If two services need independent scaling, deployment and failure recovery, separate workloads often provide a clearer design. If a helper must accompany each application replica and use local shared state, one Pod can express that dependency. Consider resource use as well: a helper's requests contribute to scheduling requirements, and an excessive limit can affect the workload's operation.
 
 Read each container's image, startup command, mounts and health behavior individually. Then examine the shared network and storage contract. That two-level review explains why a Pod can exist successfully while one container is unable to read a file or serve its expected role.
+
+## Inspect the mechanism
+
+A Pod gives its containers one network namespace: the network context that holds addresses and ports. A listener on one port is therefore shared across that context; two containers cannot independently bind the same address and port without an appropriate design. This is different from a shared filesystem.
+
+The fixture mounts `probe-code` into the application container at `/app`. A second container would need its own volume mount to see that same supplied data. Similarly, file exchange through `emptyDir` requires both containers to mount the named volume. An `emptyDir` lasts for the Pod's lifetime, so a container restart can preserve it while Pod replacement removes it.
+
+```mermaid
+flowchart TB
+    P["Pod network namespace"] --> A["Application container"]
+    P --> H["Supporting container"]
+    V["Declared shared volume"] --> M["Explicit container mounts"]
+    M --> A
+    M --> H
+```
+
+Network sharing is a Pod property, while file sharing requires explicit mounts in each container.
+
+<!-- astrona:playground:renew -->
+
+Select the private cluster connection and inspect the live state from your host shell:
+
+```sh
+export KUBECONFIG="$(astrona kubeconfig ats-027-playground-030-01)"
+if test "$(kubectl config current-context)" = "kind-astro-ats-027-playground-030-01"; then
+  kubectl -n starfleet get deployment probe -o jsonpath='{.spec.template.spec.volumes}{"\n"}{range .spec.template.spec.containers[*]}{.name}{" "}{.volumeMounts}{"\n"}{end}'
+else
+  printf "Select this module's private kubeconfig before continuing.\n" >&2
+fi
+```
+
+Compare volume declarations with each container's mounts. A declaration alone does not attach the volume at a path inside every container. The baseline uses a ConfigMap volume rather than `emptyDir`; do not infer writable shared storage from the fact that `/app` is mounted. File access mode and each container's permissions remain part of the contract.
+
+You can now describe which resources are shared and which remain container-specific. Keeping helpers in one Pod couples their placement and replacement, so independent scaling requirements may call for separate workloads.
 
 ## Common pitfalls
 

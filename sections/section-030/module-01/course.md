@@ -5,7 +5,7 @@ exam_objectives:
 ---
 # Initialization And Supporting Containers
 
-This module connects intended application behavior to declared resources and observed conditions.
+An application needs a prepared file before startup and a log collector throughout execution. The preparation must finish; the collector must remain running. Placing both in one Pod does not make their lifecycle requirements identical.
 
 ## Learning Goals
 

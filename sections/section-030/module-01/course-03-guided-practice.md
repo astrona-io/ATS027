@@ -9,6 +9,10 @@ The practice Pod has an init container, a main container and a supporting contai
 
 Use the module playground and its private kubeconfig. The context check below prevents commands from being directed at an unrelated cluster. The helper retries a command for a bounded interval after controller or policy changes; it cannot turn a persistent failure into success. Read the actual errors when the interval expires.
 
+The initializer and application use different image filesystems. The file handoff works because both mount the same named volume, not merely because they share a Pod. Read the initializer's termination state before treating application startup as the first event.
+
+The supporting container continues after initialization and reads shared files. Ordinary and native sidecar lifecycle contracts differ, so inspect the container's location and restart policy instead of inferring ordering from its name. A helper also contributes resource needs and failure modes to the whole Pod.
+
 <!-- astrona:playground:renew -->
 
 For a timed catalog session, renew this module before continuing. Skip renewal for an untimed local author run:
