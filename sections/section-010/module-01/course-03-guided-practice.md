@@ -9,6 +9,10 @@ The running probe uses a tagged Python image. You will compare the declared refe
 
 Use the module playground and its private kubeconfig. The context check below prevents commands from being directed at an unrelated cluster. The helper retries a command for a bounded interval after controller or policy changes; it cannot turn a persistent failure into success. Read the actual errors when the interval expires.
 
+The declared tag and runtime image identity answer different questions. The first selects content; the second reports what the runtime actually used. Compare both with the host image metadata without assuming that a host cache is the same store as every kind node.
+
+A restart creates another startup under the admitted pull policy. It does not necessarily retrieve newly moved tag content under `IfNotPresent`. Mounted configuration can also change behavior without changing the image, so keep artifact and runtime inputs separate.
+
 <!-- astrona:playground:renew -->
 
 For a timed catalog session, renew this module before continuing. Skip renewal for an untimed local author run:

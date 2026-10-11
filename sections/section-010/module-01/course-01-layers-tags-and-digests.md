@@ -5,6 +5,22 @@ exam_objectives:
 ---
 # Layers, Tags And Digests
 
+Two `probe` Pods can show the same image tag while using different downloaded content. To explain that difference, separate the image name from the content it identifies and separate the image filesystem from files changed during execution.
+
+## Learning objectives
+
+- Distinguish a mutable tag from a content digest.
+- Explain the difference between image layers and container writes.
+- Compare declared image references with runtime image identity.
+
+## Before you start
+
+Use a shell on your own machine with the module playground running. A Pod is Kubernetes's unit for running one or more containers together. The environment provides the `probe` Deployment, which maintains application Pods, and the `starfleet` namespace, which groups these objects.
+
+Read-only commands below use kubectl, the Kubernetes command-line tool. Select the private kubeconfig: the file that identifies this environment's cluster and credentials. The commands do not change the application.
+
+## Layers, Tags and Digests
+
 The `scout` image contains application files and runtime dependencies. An image is a packaged filesystem and execution configuration used to create containers. Images commonly use reusable filesystem layers. Multiple images can share unchanged layers rather than storing every file again.
 
 A running container adds a writable layer above its image data. Changes there do not rewrite the published image. Replacing the container does not make that writable layer a reliable store of application data. A volume provides a separate storage lifecycle when files need different persistence behavior.
@@ -32,6 +48,41 @@ A tag such as `v2` expresses a publisher's naming convention. It can be treated 
 Multi-platform images commonly use an index that refers to platform-specific image manifests. An index digest can identify the collection, while the runtime selects the compatible variant for its node. This explains why platform support matters even when the top-level image reference is valid.
 
 For a changed-behavior incident, compare the declared reference, the artifact actually used and runtime mounts or settings. The same tag with a different pulled digest is one possible cause; the same digest with different configuration is another. Separate these hypotheses rather than treating every application difference as a rebuilt image.
+
+## Inspect the mechanism
+
+The fixture declares `docker.io/library/python:3.13-alpine`. Its components identify a registry, an image repository and a tag. A tag is a publisher-controlled name. A digest is a cryptographic content identifier. When a tag moves, the reference can stay the same while the selected content changes.
+
+The runtime reports its realized image identity in container status after startup. That field is runtime evidence, not a replacement for the image's provenance or the application's configuration. A mounted ConfigMap can change visible files without rebuilding the image. Investigating changed behavior therefore needs both content identity and runtime inputs.
+
+```mermaid
+flowchart TB
+    R["Declared reference"] --> T["Tag resolution"]
+    T --> I["Selected image content"]
+    I --> C["Running container"]
+    M["Mounted configuration"] --> C
+    C --> S["Reported image identity"]
+```
+
+Running behavior depends on selected image content and runtime inputs, while a tag alone describes only a reference.
+
+<!-- astrona:playground:renew -->
+
+Select the private cluster connection and inspect the live state from your host shell:
+
+```sh
+export KUBECONFIG="$(astrona kubeconfig ats-027-playground-010-01)"
+if test "$(kubectl config current-context)" = "kind-astro-ats-027-playground-010-01"; then
+  kubectl -n starfleet get deployment probe -o jsonpath='{.spec.template.spec.containers[0].image}{"\n"}'
+  kubectl -n starfleet get pods -l app=probe -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[0].imageID}{"\n"}{end}'
+else
+  printf "Select this module's private kubeconfig before continuing.\n" >&2
+fi
+```
+
+The Deployment result shows the requested reference. The Pod results show the identity reported by each running container. Compare actual values instead of expecting a universal digest. Architecture, tag resolution and runtime representation can affect the identity you see. These commands inspect the image contract without restarting Pods or contacting the registry directly.
+
+You can now compare selection names with realized content. Matching image identities narrow the investigation but leave configuration, mounts and application state as separate possible causes of changed behavior.
 
 ## Common pitfalls
 

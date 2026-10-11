@@ -5,7 +5,7 @@ exam_objectives:
 ---
 # Image Identity And Distribution
 
-This module connects intended application behavior to declared resources and observed conditions.
+Two `probe` Pods can show the same image tag while using different downloaded content. To explain that difference, separate the image name from the content it identifies and separate the image filesystem from files changed during execution.
 
 ## Learning Goals
 
