@@ -5,6 +5,22 @@ exam_objectives:
 ---
 # Building An Image With A Clear Runtime Contract
 
+The image includes Python, but Kubernetes starts `python /app/server.py` from a mounted file. This working application demonstrates why the image and Pod specification must agree on executable, arguments, files and permissions.
+
+## Learning objectives
+
+- Distinguish Dockerfile build instructions from startup defaults.
+- Explain Kubernetes command and argument overrides.
+- Identify required files and permissions for the effective process.
+
+## Before you start
+
+Use a shell on your own machine with the module playground running. A Pod is Kubernetes's unit for running one or more containers together. The environment provides the `probe` Deployment, which maintains application Pods, and the `starfleet` namespace, which groups these objects.
+
+Read-only commands below use kubectl, the Kubernetes command-line tool. Select the private kubeconfig: the file that identifies this environment's cluster and credentials. The commands do not change the application.
+
+## Building An Image With A Clear Runtime Contract
+
 A container image is a packaged filesystem and configuration used to start a container process. Building an image turns source files and dependencies into that package. The build must produce an artifact that runs with the command, files, architecture and permissions expected by the application. A successful build does not establish that the resulting process serves requests correctly.
 
 ## Reading The Build Definition
@@ -36,6 +52,41 @@ Architecture is another part of the contract. A program built for one processor 
 Suppose a team switches the base image to reduce size. The build succeeds, but startup fails because a shared library is absent. The relevant evidence concerns the executable and runtime files, rather than Service labels or replica count. A corrected runtime stage includes compatible dependencies or a program built to avoid that requirement.
 
 If a new image is pushed under an existing mutable tag, the tag alone does not prove which bytes a running container uses. Record an immutable digest when exact artifact identity matters. Build the artifact first, identify it clearly, and distinguish changes to source, build instructions and deployment configuration when reviewing a release.
+
+## Inspect the mechanism
+
+The image supplies a filesystem and default process settings. The Pod can override its startup command and arguments, and mounts can replace visible content at a path. In this fixture, the Pod explicitly starts Python with the server file delivered by `probe-code`. The image alone is therefore not the complete application definition.
+
+Dockerfile `RUN` executes while building the image; it does not leave that process running in future containers. `ENTRYPOINT` and `CMD` describe startup defaults, while Pod `command` and `args` override the corresponding executable and arguments. Unless a shell is selected explicitly, shell operators such as pipes are just argument characters. Read the final invocation as a list of strings before diagnosing missing files or process exits.
+
+```mermaid
+flowchart TB
+    I["Image files and defaults"] --> P["Effective process"]
+    C["Pod command and arguments"] --> P
+    V["Mounted files"] --> P
+    U["Process identity"] --> P
+    P --> A["Application listener"]
+```
+
+The effective process combines image content with Pod overrides, mounts and execution permissions.
+
+<!-- astrona:playground:renew -->
+
+Select the private cluster connection and inspect the live state from your host shell:
+
+```sh
+export KUBECONFIG="$(astrona kubeconfig ats-027-playground-010-02)"
+if test "$(kubectl config current-context)" = "kind-astro-ats-027-playground-010-02"; then
+  kubectl -n starfleet get deployment probe -o jsonpath='{.spec.template.spec.containers[0].command}{"\n"}{.spec.template.spec.containers[0].args}{"\n"}{.spec.template.spec.containers[0].volumeMounts}{"\n"}'
+  kubectl -n starfleet get configmap probe-code -o jsonpath='{.metadata.name}{"\n"}'
+else
+  printf "Select this module's private kubeconfig before continuing.\n" >&2
+fi
+```
+
+Find the executable and server path in the command list, then match the mount that supplies `/app`. An omitted argument field uses its applicable default semantics; it does not mean a shell reconstructs a command line for you. This inspection changes no image or Pod and exposes the runtime relationship that a new image must continue to support.
+
+You can now distinguish build success from the runtime contract. A usable artifact must support the actual invocation and identity, and its listener still needs compatible probe and Service settings.
 
 ## Common pitfalls
 

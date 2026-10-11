@@ -9,6 +9,10 @@ You will build a small HTTP application image, inspect its runtime settings and 
 
 Use the module playground and its private kubeconfig. The context check below prevents commands from being directed at an unrelated cluster. The helper retries a command for a bounded interval after controller or policy changes; it cannot turn a persistent failure into success. Read the actual errors when the interval expires.
 
+The build produces a local image; loading that image makes it available to this kind cluster's nodes. These operations do not publish a registry artifact. The explicit local name avoids confusing the practice build with an upstream image of the same application.
+
+The non-root user must be able to read the application files and bind the chosen listener port. Kubernetes startup overrides can change the process invocation, so compare the image's defaults with the Pod command before diagnosing a startup failure. Build completion alone does not check the response.
+
 <!-- astrona:playground:renew -->
 
 For a timed catalog session, renew this module before continuing. Skip renewal for an untimed local author run:

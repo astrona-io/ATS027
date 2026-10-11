@@ -5,7 +5,7 @@ exam_objectives:
 ---
 # The Image Build And Runtime Contract
 
-This module connects intended application behavior to declared resources and observed conditions.
+The image includes Python, but Kubernetes starts `python /app/server.py` from a mounted file. This working application demonstrates why the image and Pod specification must agree on executable, arguments, files and permissions.
 
 ## Learning Goals
 
