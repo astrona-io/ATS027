@@ -9,6 +9,10 @@ A Deployment manages a requested replica population, while a DaemonSet targets e
 
 Use the module playground and its private kubeconfig. The context check below prevents commands from being directed at an unrelated cluster. The helper retries a command for a bounded interval after controller or policy changes; it cannot turn a persistent failure into success. Read the actual errors when the interval expires.
 
+Ownership and placement answer different questions. A ReplicaSet maintains the Deployment's desired population, while a DaemonSet maintains eligible-node coverage. Read owner references to identify the controller and node names to identify placement.
+
+Adding or removing eligible nodes changes the DaemonSet's expected population. Changing a Deployment's replica count changes application capacity instead. Stable StatefulSet identity serves another requirement and does not supply database replication or recovery by itself.
+
 <!-- astrona:playground:renew -->
 
 For a timed catalog session, renew this module before continuing. Skip renewal for an untimed local author run:

@@ -5,7 +5,7 @@ exam_objectives:
 ---
 # Controllers For Continuous Applications
 
-This module connects intended application behavior to declared resources and observed conditions.
+Deleting one managed `probe` Pod does not remove the application's requirement for two replicas. Its owner creates a replacement from the stored template. Knowing which controller owns that template explains where a lasting change belongs.
 
 ## Learning Goals
 
