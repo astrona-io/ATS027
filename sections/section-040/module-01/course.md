@@ -5,7 +5,7 @@ exam_objectives:
 ---
 # Volume Lifetime And Provisioning
 
-This module connects intended application behavior to declared resources and observed conditions.
+A report saved inside one container disappears when that container is replaced. A file in `emptyDir` can survive a container restart but not Pod removal. A persistent claim supplies a different storage lifetime, subject to its backend and deletion policy.
 
 ## Learning Goals
 

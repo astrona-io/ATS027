@@ -9,6 +9,10 @@ An emptyDir follows a Pod lifetime, while a PersistentVolumeClaim can outlive th
 
 Use the module playground and its private kubeconfig. The context check below prevents commands from being directed at an unrelated cluster. The helper retries a command for a bounded interval after controller or policy changes; it cannot turn a persistent failure into success. Read the actual errors when the interval expires.
 
+Use the event being tested to interpret the storage result. A container restart can preserve a Pod's `emptyDir`, while replacing that Pod creates a new ephemeral volume. Reusing a bound claim follows a different lifecycle and still depends on its backend being reachable.
+
+The local practice provisioner demonstrates claim binding and reuse; it does not prove remote replication or disaster recovery. Read the class's binding mode and the consumer's placement when a claim waits. A bound claim is useful evidence, but application writes and recovery require their own checks.
+
 <!-- astrona:playground:renew -->
 
 For a timed catalog session, renew this module before continuing. Skip renewal for an untimed local author run:
