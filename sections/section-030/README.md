@@ -9,6 +9,9 @@ This section covers understand multi-container Pod design patterns (e.g. sidecar
 
 Each module begins with its goals and ends with a summary. Reusable YAML knowledge checks follow the section summary and are registered separately for future presentation.
 
+
+You will distinguish preparation that must finish from support that must continue. Read startup order, explicit shared mounts and container-specific requirements together. A shared Pod supplies networking and lifecycle coupling, but it does not merge every process or filesystem assumption.
+
 ## Learning Outcomes
 
 - Distinguish initialization from continuing assistance.
