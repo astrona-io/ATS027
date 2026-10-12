@@ -1,0 +1,115 @@
+schema_version: 1
+kind: question_bank
+id: ats027-domain-review
+course_id: ATS027
+exam_code: CKAD
+status: draft
+provenance: Original practice material; not official examination questions.
+scope:
+  type: domain
+  id: domain-review
+  title: Application Design and Build
+placement:
+  position: after
+  reading: sections/section-040/module-02/course-04-summary.md
+questions:
+- id: ats027-domain-review-q01
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain multi-stage runtime dependencies.
+  source_readings:
+  - sections/section-010/module-02/course-01-building-an-image-with-a-clear-runtime-contract.md
+  prompt: A release build succeeds but its binary cannot start in the final image. Where should diagnosis
+    begin?
+  options:
+  - id: a
+    text: The blue-green traffic percentage
+    explanation: Routing exposure does not supply required libraries.
+  - id: b
+    text: The CronJob overlap policy
+    explanation: Scheduling finite work is unrelated to this startup contract.
+  - id: c
+    text: The executable and runtime dependency contract
+    explanation: Build success does not prove that the final runtime contains compatible dependencies.
+  correct_option: c
+  explanation: Build success does not prove that the final runtime contains compatible dependencies.
+- id: ats027-domain-review-q02
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Choose a DaemonSet for node-local responsibility.
+  source_readings:
+  - sections/section-020/module-01/course-02-choosing-deployments-daemonsets-and-statefulsets.md
+  prompt: A node-local agent must appear when new eligible nodes are added. Which model expresses that
+    relationship?
+  options:
+  - id: a
+    text: A one-time Job
+    explanation: Completion does not maintain continued node presence.
+  - id: b
+    text: A DaemonSet
+    explanation: The controller follows node eligibility rather than a manually maintained normal replica
+      count.
+  - id: c
+    text: A fixed Deployment replica count equal to today's node count
+    explanation: That count does not directly track future eligible nodes.
+  correct_option: b
+  explanation: The controller follows node eligibility rather than a manually maintained normal replica
+    count.
+- id: ats027-domain-review-q03
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Evaluate deadlines, idempotence and cleanup.
+  source_readings:
+  - sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
+  prompt: A retry can repeat an external report write. What application property reduces unintended duplication?
+  options:
+  - id: a
+    text: Idempotent processing with a clear work identity
+    explanation: Repeated attempts should not create unintended additional effects.
+  - id: b
+    text: A guarantee that Kubernetes never retries
+    explanation: Retries and replacement attempts can occur.
+  - id: c
+    text: A shorter image tag
+    explanation: Artifact naming does not coordinate external writes.
+  correct_option: a
+  explanation: Repeated attempts should not create unintended additional effects.
+- id: ats027-domain-review-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Identify shared network and volume relationships.
+  source_readings:
+  - sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
+  prompt: A helper reads files from a shared emptyDir. Does that imply the files survive Pod replacement?
+  options:
+  - id: a
+    text: Yes; any multi-container volume is persistent
+    explanation: Grouping containers does not change volume durability.
+  - id: b
+    text: Yes; sidecars automatically back up every mounted path
+    explanation: That behavior requires an explicit design and is not provided by the pattern alone.
+  - id: c
+    text: No; shared visibility and storage lifetime are separate
+    explanation: The shared volume can connect containers while still ending with the Pod.
+  correct_option: c
+  explanation: The shared volume can connect containers while still ending with the Pod.
+- id: ats027-domain-review-q05
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Separate persistent availability from backup and recovery.
+  source_readings:
+  - sections/section-040/module-02/course-02-reclaim-policies-and-recovery.md
+  prompt: A persistent volume is available after replacement. What additional concern remains for important
+    data?
+  options:
+  - id: a
+    text: Whether a Service has a cluster address
+    explanation: Service addressing does not establish data recovery.
+  - id: b
+    text: Backup and recovery from corruption or deletion
+    explanation: Availability of current storage does not prove recoverability of earlier data.
+  - id: c
+    text: Whether its name contains the application name
+    explanation: Naming is not a recovery control.
+  correct_option: b
+  explanation: Availability of current storage does not prove recoverability of earlier data.
