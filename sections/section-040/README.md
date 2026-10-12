@@ -9,6 +9,9 @@ This section covers utilize persistent and ephemeral volumes. You will study Vol
 
 Each module begins with its goals and ends with a summary. Reusable YAML knowledge checks follow the section summary and are registered separately for future presentation.
 
+
+You will choose storage according to the events its data must survive. Follow requests through class selection, binding and mounting, then separate access mode from concurrent-write correctness. Retention and persistence are useful properties, while backup and recovery need additional design.
+
 ## Learning Outcomes
 
 - Distinguish writable layers, emptyDir and persistent claims.
