@@ -9,6 +9,9 @@ This section covers choose and use the right workload resource (Deployment, Daem
 
 Each module begins with its goals and ends with a summary. Reusable YAML knowledge checks follow the section summary and are registered separately for future presentation.
 
+
+You will choose management behavior from the workload requirement. Interchangeable replicas, node-local responsibility, stable members and finite work need different controller contracts. Completion and replacement still require the application to preserve its own data and handle repeated effects safely.
+
 ## Learning Outcomes
 
 - Compare Pod ownership and reconciliation.
