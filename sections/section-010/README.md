@@ -9,6 +9,9 @@ This section covers define, build and modify container images. You will study Im
 
 Each module begins with its goals and ends with a summary. Reusable YAML knowledge checks follow the section summary and are registered separately for future presentation.
 
+
+You will follow an application from build inputs to a runnable artifact and then to the content selected by a node. Tags, digests, startup commands and pull policy describe different parts of that process. The goal is to explain both artifact identity and the complete runtime contract.
+
 ## Learning Outcomes
 
 - Explain image layers and immutable digests.
