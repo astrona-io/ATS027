@@ -36,7 +36,7 @@ modules:
   title: Define, build and modify container images
   description: Developed explanations and application reasoning for Define, build
     and modify container images.
-  status: alpha
+  maturity: alpha
   content:
   - type: reading
     title: Define, build and modify container images
@@ -111,7 +111,7 @@ modules:
     etc.)
   description: Developed explanations and application reasoning for Choose and use
     the right workload resource (Deployment, DaemonSet, CronJob, etc.).
-  status: alpha
+  maturity: alpha
   content:
   - type: reading
     title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob,
@@ -203,7 +203,7 @@ modules:
   title: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
   description: Developed explanations and application reasoning for Understand multi-container
     Pod design patterns (e.g. sidecar, init and others).
-  status: alpha
+  maturity: alpha
   content:
   - type: reading
     title: Understand multi-container Pod design patterns (e.g. sidecar, init and
@@ -246,7 +246,7 @@ modules:
   title: Utilize persistent and ephemeral volumes
   description: Developed explanations and application reasoning for Utilize persistent
     and ephemeral volumes.
-  status: alpha
+  maturity: alpha
   content:
   - type: reading
     title: Utilize persistent and ephemeral volumes
