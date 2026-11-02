@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: image-probe
+  namespace: starfleet
+spec:
+  restartPolicy: Never
+  containers:
+  - name: web
+    image: localhost/ckad-probe:v1
+    imagePullPolicy: Never
+    ports:
+    - name: http
+      containerPort: 8000

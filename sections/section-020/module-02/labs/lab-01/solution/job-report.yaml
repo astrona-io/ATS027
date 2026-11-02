@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: report
+  namespace: starfleet
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: report
+        image: docker.io/library/busybox:1.37.0
+        command:
+        - sh
+        - -c
+        - printf 'report-complete\n'

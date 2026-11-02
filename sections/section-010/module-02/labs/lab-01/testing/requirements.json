@@ -1,0 +1,49 @@
+{
+  "context": "kind-astro-ats-027-lab-010-02-01",
+  "resources": [
+    {
+      "kind": "pod",
+      "name": "image-probe",
+      "expected": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "name": "image-probe",
+          "namespace": "starfleet"
+        },
+        "spec": {
+          "restartPolicy": "Never",
+          "containers": [
+            {
+              "name": "web",
+              "image": "localhost/ckad-probe:v1",
+              "imagePullPolicy": "Never",
+              "ports": [
+                {
+                  "name": "http",
+                  "containerPort": 8000
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "state": "pod"
+    }
+  ],
+  "behavior": [
+    {
+      "args": [
+        "kubectl",
+        "-n",
+        "starfleet",
+        "exec",
+        "image-probe",
+        "--",
+        "id",
+        "-u"
+      ],
+      "equals": "1000"
+    }
+  ]
+}

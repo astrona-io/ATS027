@@ -1,0 +1,53 @@
+{
+  "context": "kind-astro-ats-027-lab-020-01-01",
+  "resources": [
+    {
+      "kind": "daemonset",
+      "name": "node-report",
+      "expected": {
+        "apiVersion": "apps/v1",
+        "kind": "DaemonSet",
+        "metadata": {
+          "name": "node-report",
+          "namespace": "starfleet"
+        },
+        "spec": {
+          "selector": {
+            "matchLabels": {
+              "app": "node-report"
+            }
+          },
+          "template": {
+            "metadata": {
+              "labels": {
+                "app": "node-report"
+              }
+            },
+            "spec": {
+              "containers": [
+                {
+                  "name": "report",
+                  "image": "docker.io/library/busybox:1.37.0",
+                  "command": [
+                    "sh",
+                    "-c",
+                    "sleep 3600"
+                  ]
+                }
+              ],
+              "tolerations": [
+                {
+                  "key": "node-role.kubernetes.io/control-plane",
+                  "operator": "Exists",
+                  "effect": "NoSchedule"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "state": "daemonset"
+    }
+  ],
+  "behavior": []
+}

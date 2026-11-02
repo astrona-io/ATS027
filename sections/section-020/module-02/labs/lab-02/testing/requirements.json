@@ -1,0 +1,81 @@
+{
+  "context": "kind-astro-ats-027-lab-020-02-02",
+  "resources": [
+    {
+      "kind": "cronjob",
+      "name": "scheduled-report",
+      "expected": {
+        "apiVersion": "batch/v1",
+        "kind": "CronJob",
+        "metadata": {
+          "name": "scheduled-report",
+          "namespace": "starfleet"
+        },
+        "spec": {
+          "schedule": "*/5 * * * *",
+          "concurrencyPolicy": "Forbid",
+          "suspend": true,
+          "jobTemplate": {
+            "spec": {
+              "backoffLimit": 2,
+              "template": {
+                "spec": {
+                  "restartPolicy": "Never",
+                  "containers": [
+                    {
+                      "name": "report",
+                      "image": "docker.io/library/busybox:1.37.0",
+                      "command": [
+                        "sh",
+                        "-c",
+                        "printf 'scheduled-report\\n'"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "kind": "job",
+      "name": "scheduled-once",
+      "expected": {
+        "spec": {
+          "backoffLimit": 2,
+          "template": {
+            "spec": {
+              "restartPolicy": "Never",
+              "containers": [
+                {
+                  "name": "report",
+                  "image": "docker.io/library/busybox:1.37.0",
+                  "command": [
+                    "sh",
+                    "-c",
+                    "printf 'scheduled-report\\n'"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "state": "job"
+    }
+  ],
+  "behavior": [
+    {
+      "args": [
+        "kubectl",
+        "-n",
+        "starfleet",
+        "logs",
+        "job/scheduled-once"
+      ],
+      "equals": "scheduled-report"
+    }
+  ]
+}
