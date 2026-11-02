@@ -1,0 +1,115 @@
+schema_version: 1
+kind: question_bank
+id: ats027-section-020
+course_id: ATS027
+exam_code: CKAD
+status: draft
+provenance: Original practice material; not official examination questions.
+scope:
+  type: section
+  id: section-020
+  title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
+placement:
+  position: after
+  reading: sections/section-020/module-02/course-03-summary.md
+questions:
+- id: ats027-section-020-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Choose a Deployment for interchangeable replicas.
+  source_readings:
+  - sections/section-020/module-01/course-02-choosing-deployments-daemonsets-and-statefulsets.md
+  prompt: Which controller fits four interchangeable frontend replicas?
+  options:
+  - id: a
+    text: A DaemonSet
+    explanation: A DaemonSet expresses presence on eligible nodes rather than a normal frontend replica
+      count.
+  - id: b
+    text: A CronJob
+    explanation: A CronJob schedules finite work rather than maintaining a continuous frontend.
+  - id: c
+    text: A Deployment
+    explanation: A Deployment manages replaceable replicas using a common Pod template.
+  correct_option: c
+  explanation: A Deployment manages replaceable replicas using a common Pod template.
+- id: ats027-section-020-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Choose a DaemonSet for node-local responsibility.
+  source_readings:
+  - sections/section-020/module-01/course-02-choosing-deployments-daemonsets-and-statefulsets.md
+  prompt: A collector must accompany every eligible node. Which controller fits that responsibility?
+  options:
+  - id: a
+    text: A Job
+    explanation: A Job is intended to finish rather than maintain a node-wide agent.
+  - id: b
+    text: A DaemonSet
+    explanation: DaemonSets manage node-local workload presence according to eligibility.
+  - id: c
+    text: A Deployment with a permanently fixed count
+    explanation: A fixed count does not directly express a copy on each eligible node.
+  correct_option: b
+  explanation: DaemonSets manage node-local workload presence according to eligibility.
+- id: ats027-section-020-q03
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain StatefulSet identity and storage relationships.
+  source_readings:
+  - sections/section-020/module-01/course-02-choosing-deployments-daemonsets-and-statefulsets.md
+  prompt: What does StatefulSet identity provide by itself?
+  options:
+  - id: a
+    text: A stable member identity relationship
+    explanation: Stable names and storage associations support member identity but do not implement application
+      replication.
+  - id: b
+    text: A guarantee that a database cannot lose data
+    explanation: Database correctness and recovery require additional design.
+  - id: c
+    text: Automatic backup of every claim
+    explanation: Member-specific storage is not a backup service.
+  correct_option: a
+  explanation: Stable names and storage associations support member identity but do not implement application
+    replication.
+- id: ats027-section-020-q04
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain completions, parallelism and retries.
+  source_readings:
+  - sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
+  prompt: A Job requires six successful completions and allows two workers concurrently. Which interpretation
+    fits?
+  options:
+  - id: a
+    text: Exactly six workers must run simultaneously
+    explanation: Parallelism can limit active workers below the completion target.
+  - id: b
+    text: The controller automatically divides all application input safely
+    explanation: Work assignment and repeated external effects still require application logic.
+  - id: c
+    text: Required successful work and maximum concurrent workers are separate settings
+    explanation: Completions and parallelism express different parts of Job execution.
+  correct_option: c
+  explanation: Completions and parallelism express different parts of Job execution.
+- id: ats027-section-020-q05
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Compare CronJob overlap policies.
+  source_readings:
+  - sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
+  prompt: A scheduled report takes longer than its schedule interval and overlap is unsafe. What does
+    Forbid do?
+  options:
+  - id: a
+    text: It serializes every unrelated Job in the namespace
+    explanation: The concurrency policy does not provide namespace-wide serialization.
+  - id: b
+    text: It avoids starting overlapping Jobs from that CronJob
+    explanation: Forbid limits overlap for the CronJob; it can lead to skipped due runs.
+  - id: c
+    text: It makes every report finish faster
+    explanation: Overlap policy does not change application runtime.
+  correct_option: b
+  explanation: Forbid limits overlap for the CronJob; it can lead to skipped due runs.

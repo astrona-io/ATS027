@@ -1,18 +1,21 @@
-# ATS027 — CKAD: Application Design and Build
+# Application Design and Build (ATS027)
 
-Preparation for the **Application Design and Build** domain of **Certified Kubernetes Application Developer (CKAD)**.
-The published domain weight is **20%**. This repository belongs to
-the [ATP006 training path](https://github.com/astrona-io/ATP006).
+Certified Kubernetes Application Developer (CKAD): Application Design and Build, worth 20% of the curriculum and part of ATP006.
 
-**Status:** Preparation scaffold; content authoring has not started.
+Each section has an introduction. Each module combines detailed concept readings, an ungraded isolated playground, guided practical work and a closing summary. YAML knowledge checks remain separately indexed. Technical content stays draft for review. New graded labs are not included.
 
-The initial commit reserves the curriculum structure. Lessons, playgrounds,
-labs and assessments are planned and are not ready for learner use.
+## Course Outline
 
-See [CURRICULUM.md](CURRICULUM.md) for the objective map and authoring checklist,
-[astrona.yaml](astrona.yaml) for the course manifest, and
-[CLAUDE.md](CLAUDE.md) for writing and environment rules.
+| Section / module | Module | Concept and practical readings |
+| --- | --- | --- |
+| 010 / 01 | Image Identity And Distribution | Layers, Tags And Digests; From Build To Image Pull; Inspect Image References And Running Content Identity |
+| 010 / 02 | The Image Build And Runtime Contract | Building An Image With A Clear Runtime Contract; Build And Load A Non-Root Application Image |
+| 020 / 01 | Controllers For Continuous Applications | Managing Long-Running Workloads; Choosing Deployments, DaemonSets And StatefulSets; Compare Deployment And DaemonSet Ownership |
+| 020 / 02 | Finite And Scheduled Application Work | Jobs, Retries And Scheduled Work; Complete A Job And Trigger Scheduled Work Deliberately |
+| 030 / 01 | Initialization And Supporting Containers | Init Containers And Sidecar Patterns; Sharing Pod Resources Without Sharing Every Assumption; Observe Initialization And Shared Pod Storage |
+| 040 / 01 | Volume Lifetime And Provisioning | Storage Lifecycles And Claims; Provisioning, Classes And Drivers; Compare Pod-Lifetime And Claim-Lifetime Data |
+| 040 / 02 | Access Modes And Data Retention | Access Modes And Data Presentation; Reclaim Policies And Recovery; Inspect Access Modes And Change Reclaim Policy Safely |
 
-Curriculum source: [official CKAD page](https://training.linuxfoundation.org/certification/certified-kubernetes-application-developer-ckad/), checked 2026-10-10.
-License: [Apache-2.0](LICENSE). Curriculum objectives retain attribution to
-The Linux Foundation and CNCF; see [CNCF curriculum licensing](https://github.com/cncf/curriculum).
+## Author Review
+
+See [curriculum coverage](CURRICULUM.md), [primary sources](SOURCES.md), [assessment contracts](ASSESSMENTS.md) and [contribution guidance](CONTRIBUTING.md). Each playground has its own config, bootstrap, guide and author smoke script. Static checks passed; live execution remains pending because the authoring session cannot access the container engine. Retain that limitation until real runtime evidence is recorded.
