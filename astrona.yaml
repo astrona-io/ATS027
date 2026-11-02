@@ -1,9 +1,8 @@
-# CKAD concepts, module playgrounds and guided practice; YAML checks are indexed separately.
 training:
   id: ATS027
   title: 'CKAD: Application Design and Build'
-  description: Detailed CKAD teaching with module playgrounds, guided hands-on practice and reusable YAML
-    knowledge checks. Technical content remains draft for review.
+  description: Detailed CKAD teaching with module playgrounds, guided hands-on practice
+    and reusable YAML knowledge checks. Technical content remains draft for review.
   certification:
     name: Certified Kubernetes Application Developer
     code: CKAD
@@ -12,7 +11,8 @@ training:
     weight: 20
     competencies:
     - Define, build and modify container images
-    - Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
+    - Choose and use the right workload resource (Deployment, DaemonSet, CronJob,
+      etc.)
     - Understand multi-container Pod design patterns (e.g. sidecar, init and others)
     - Utilize persistent and ephemeral volumes
 modules:
@@ -34,9 +34,9 @@ modules:
     path: sections/intro/course-03-how-this-course-is-made.md
 - id: module-010
   title: Define, build and modify container images
-  description: Developed explanations and application reasoning for Define, build and modify container
-    images.
-  draft: true
+  description: Developed explanations and application reasoning for Define, build
+    and modify container images.
+  status: alpha
   content:
   - type: reading
     title: Define, build and modify container images
@@ -51,6 +51,25 @@ modules:
     title: From Build To Image Pull
     path: sections/section-010/module-01/course-02-from-build-to-image-pull.md
   - type: reading
+    title: Record A Running Container Image Identity — Task
+    path: sections/section-010/module-01/labs/lab-01/question.md
+  - type: lab
+    title: Record A Running Container Image Identity
+    path: sections/section-010/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: image-identity
+    task_kind: build
+    learning_goals:
+    - Distinguish a requested image reference from the identity reported for a running
+      container.
+    tags:
+    - ckad
+    - image-identity
+  - type: reading
+    title: Record A Running Container Image Identity — Solution
+    path: sections/section-010/module-01/labs/lab-01/solution.md
+  - type: reading
     title: Inspect Image References And Running Content Identity
     path: sections/section-010/module-01/course-03-guided-practice.md
   - type: reading
@@ -63,19 +82,40 @@ modules:
     title: Building An Image With A Clear Runtime Contract
     path: sections/section-010/module-02/course-01-building-an-image-with-a-clear-runtime-contract.md
   - type: reading
+    title: Build And Load A Non-Root Image — Task
+    path: sections/section-010/module-02/labs/lab-01/question.md
+  - type: lab
+    title: Build And Load A Non-Root Image
+    path: sections/section-010/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: image-build
+    task_kind: build
+    learning_goals:
+    - Build a local image, load it into the private cluster and verify its user and
+      response.
+    tags:
+    - ckad
+    - image-build
+  - type: reading
+    title: Build And Load A Non-Root Image — Solution
+    path: sections/section-010/module-02/labs/lab-01/solution.md
+  - type: reading
     title: Build And Load A Non-Root Application Image
     path: sections/section-010/module-02/course-02-guided-practice.md
   - type: reading
     title: Summary
     path: sections/section-010/module-02/course-03-summary.md
 - id: module-020
-  title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
-  description: Developed explanations and application reasoning for Choose and use the right workload
-    resource (Deployment, DaemonSet, CronJob, etc.).
-  draft: true
+  title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob,
+    etc.)
+  description: Developed explanations and application reasoning for Choose and use
+    the right workload resource (Deployment, DaemonSet, CronJob, etc.).
+  status: alpha
   content:
   - type: reading
-    title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
+    title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob,
+      etc.)
     path: sections/section-020/README.md
   - type: reading
     title: Controllers For Continuous Applications
@@ -86,6 +126,24 @@ modules:
   - type: reading
     title: Choosing Deployments, DaemonSets And StatefulSets
     path: sections/section-020/module-01/course-02-choosing-deployments-daemonsets-and-statefulsets.md
+  - type: reading
+    title: Run One DaemonSet Pod Per Node — Task
+    path: sections/section-020/module-01/labs/lab-01/question.md
+  - type: lab
+    title: Run One DaemonSet Pod Per Node
+    path: sections/section-020/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: daemonset
+    task_kind: build
+    learning_goals:
+    - Choose DaemonSet ownership for a workload that must cover each eligible node.
+    tags:
+    - ckad
+    - daemonset
+  - type: reading
+    title: Run One DaemonSet Pod Per Node — Solution
+    path: sections/section-020/module-01/labs/lab-01/solution.md
   - type: reading
     title: Compare Deployment And DaemonSet Ownership
     path: sections/section-020/module-01/course-03-guided-practice.md
@@ -99,6 +157,43 @@ modules:
     title: Jobs, Retries And Scheduled Work
     path: sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
   - type: reading
+    title: Create And Complete A Job — Task
+    path: sections/section-020/module-02/labs/lab-01/question.md
+  - type: lab
+    title: Create And Complete A Job
+    path: sections/section-020/module-02/labs/lab-01
+    difficulty: beginner
+    estimated_duration: 15m
+    topic: job
+    task_kind: build
+    learning_goals:
+    - Run finite work with a Job and verify successful completion and its log.
+    tags:
+    - ckad
+    - job
+  - type: reading
+    title: Create And Complete A Job — Solution
+    path: sections/section-020/module-02/labs/lab-01/solution.md
+  - type: reading
+    title: Trigger A Job From A Suspended CronJob — Task
+    path: sections/section-020/module-02/labs/lab-02/question.md
+  - type: lab
+    title: Trigger A Job From A Suspended CronJob
+    path: sections/section-020/module-02/labs/lab-02
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: cronjob
+    task_kind: build
+    learning_goals:
+    - Declare a schedule and deliberately run its template once without waiting for
+      the clock.
+    tags:
+    - ckad
+    - cronjob
+  - type: reading
+    title: Trigger A Job From A Suspended CronJob — Solution
+    path: sections/section-020/module-02/labs/lab-02/solution.md
+  - type: reading
     title: Complete A Job And Trigger Scheduled Work Deliberately
     path: sections/section-020/module-02/course-02-guided-practice.md
   - type: reading
@@ -106,12 +201,13 @@ modules:
     path: sections/section-020/module-02/course-03-summary.md
 - id: module-030
   title: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
-  description: Developed explanations and application reasoning for Understand multi-container Pod design
-    patterns (e.g. sidecar, init and others).
-  draft: true
+  description: Developed explanations and application reasoning for Understand multi-container
+    Pod design patterns (e.g. sidecar, init and others).
+  status: alpha
   content:
   - type: reading
-    title: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
+    title: Understand multi-container Pod design patterns (e.g. sidecar, init and
+      others)
     path: sections/section-030/README.md
   - type: reading
     title: Initialization And Supporting Containers
@@ -123,6 +219,24 @@ modules:
     title: Sharing Pod Resources Without Sharing Every Assumption
     path: sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
   - type: reading
+    title: Initialize Data Shared By Two Containers — Task
+    path: sections/section-030/module-01/labs/lab-01/question.md
+  - type: lab
+    title: Initialize Data Shared By Two Containers
+    path: sections/section-030/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: init-shared-volume
+    task_kind: build
+    learning_goals:
+    - Complete initialization before two ordinary containers read the same Pod volume.
+    tags:
+    - ckad
+    - init-shared-volume
+  - type: reading
+    title: Initialize Data Shared By Two Containers — Solution
+    path: sections/section-030/module-01/labs/lab-01/solution.md
+  - type: reading
     title: Observe Initialization And Shared Pod Storage
     path: sections/section-030/module-01/course-03-guided-practice.md
   - type: reading
@@ -130,8 +244,9 @@ modules:
     path: sections/section-030/module-01/course-04-summary.md
 - id: module-040
   title: Utilize persistent and ephemeral volumes
-  description: Developed explanations and application reasoning for Utilize persistent and ephemeral volumes.
-  draft: true
+  description: Developed explanations and application reasoning for Utilize persistent
+    and ephemeral volumes.
+  status: alpha
   content:
   - type: reading
     title: Utilize persistent and ephemeral volumes
@@ -145,6 +260,25 @@ modules:
   - type: reading
     title: Provisioning, Classes And Drivers
     path: sections/section-040/module-01/course-02-provisioning-classes-and-drivers.md
+  - type: reading
+    title: Preserve Claim Data Across Pod Replacement — Task
+    path: sections/section-040/module-01/labs/lab-01/question.md
+  - type: lab
+    title: Preserve Claim Data Across Pod Replacement
+    path: sections/section-040/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: persistent-storage
+    task_kind: build
+    learning_goals:
+    - Observe persistent data surviving replacement while Pod-lifetime scratch data
+      disappears.
+    tags:
+    - ckad
+    - persistent-storage
+  - type: reading
+    title: Preserve Claim Data Across Pod Replacement — Solution
+    path: sections/section-040/module-01/labs/lab-01/solution.md
   - type: reading
     title: Compare Pod-Lifetime And Claim-Lifetime Data
     path: sections/section-040/module-01/course-03-guided-practice.md
@@ -160,6 +294,24 @@ modules:
   - type: reading
     title: Reclaim Policies And Recovery
     path: sections/section-040/module-02/course-02-reclaim-policies-and-recovery.md
+  - type: reading
+    title: Retain A Bound Volume Safely — Task
+    path: sections/section-040/module-02/labs/lab-01/question.md
+  - type: lab
+    title: Retain A Bound Volume Safely
+    path: sections/section-040/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: reclaim-policy
+    task_kind: build
+    learning_goals:
+    - Change a bound volume reclaim policy while preserving its active claim and consumer.
+    tags:
+    - ckad
+    - reclaim-policy
+  - type: reading
+    title: Retain A Bound Volume Safely — Solution
+    path: sections/section-040/module-02/labs/lab-01/solution.md
   - type: reading
     title: Inspect Access Modes And Change Reclaim Policy Safely
     path: sections/section-040/module-02/course-03-guided-practice.md
