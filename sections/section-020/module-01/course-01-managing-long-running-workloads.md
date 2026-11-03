@@ -83,6 +83,15 @@ Locate each Pod's ReplicaSet owner and that ReplicaSet's Deployment owner. Names
 
 You can now locate the owner of a durable workload change. Controller reconciliation restores declared population and templates, while storage, request correctness and external effects remain application responsibilities.
 
+## How ownership drives replacement
+
+The `ownerReferences` list on a Pod names the controller that created it, and the entry that has `controller: true` marks the one controller that manages the Pod. The ReplicaSet controller, a loop in `kube-controller-manager`, counts the Pods that match its selector and are owned by it. When the count differs from `spec.replicas`, it creates or deletes Pods through the API server until the numbers match.
+
+A Deployment does not manage Pods directly. It creates one ReplicaSet for each version of its Pod template and labels each ReplicaSet and its Pods with a `pod-template-hash` value computed from the template. A change to the template creates a new ReplicaSet with a new hash, and the Deployment controller then scales the old and the new ReplicaSet against each other. A change to `spec.replicas` alone does not change the hash, so it creates no new ReplicaSet.
+
+The same ownership data drives deletion. When you delete a Deployment, the garbage collector in `kube-controller-manager` finds the objects that name it as an owner and deletes the ReplicaSets, and then the Pods. When you delete only a Pod, its owner still exists, so the ReplicaSet controller notices the missing replica and creates a new Pod with a new generated name. This is why deleting a Pod never removes a workload, and why the owner, not the Pod, is the object to change.
+
+
 ## Common pitfalls
 
 > [!WARNING]

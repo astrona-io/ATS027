@@ -1,0 +1,65 @@
+# Choose and use the right workload resource, capstone (LAB). UNTESTED: written statically, never run.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-027-lab-020-capstone
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    preloadImages:
+    - docker.io/library/busybox:1.37.0
+bootstrap:
+  init:
+  - name: seed-cluster
+    description: Create four workloads that use the wrong workload kind
+    type: file
+    source: bootstrap/01-seed-cluster.sh
+testing:
+  init:
+  - name: apply-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: node-agent-daemonset
+    description: node-agent is a DaemonSet with one ready Pod per node and no Deployment of that name
+    type: file
+    source: validation/validate-node-agent.sh
+    hint: A workload that must run on every node is a DaemonSet. Delete the Deployment node-agent and create a DaemonSet with the same name.
+  - name: scout-web-deployment
+    description: scout-web is a Deployment with 3 ready replicas, a readiness probe and a rolling update that never removes capacity
+    type: file
+    source: validation/validate-scout-web-spec.sh
+    hint: Replace the bare Pod with a Deployment. Use strategy RollingUpdate with maxUnavailable 0 and maxSurge 1, and add a readinessProbe.
+  - name: scout-web-rollout-keeps-capacity
+    description: A rollout of scout-web finishes and available replicas never drop below 3
+    type: file
+    source: validation/validate-scout-web-rollout.sh
+    hint: The readiness probe must pass on the new Pods, or the rollout stops. Check the probe path and port.
+  - name: outpost-sweep-cronjob
+    description: outpost-sweep is a CronJob with the required schedule and policies and no Deployment of that name
+    type: file
+    source: validation/validate-outpost-sweep-spec.sh
+    hint: Periodic finite work is a CronJob. Use schedule */15 * * * *, concurrencyPolicy Forbid and failedJobsHistoryLimit 1, and delete the Deployment.
+  - name: outpost-sweep-runs
+    description: A Job created from outpost-sweep completes
+    type: file
+    source: validation/validate-outpost-sweep-runs.sh
+    hint: The Pod template must end with exit status 0 and use restartPolicy OnFailure or Never.
+  - name: ledger-statefulset
+    description: ledger is a StatefulSet with a headless Service and a volume claim template, and no Deployment of that name
+    type: file
+    source: validation/validate-ledger-spec.sh
+    hint: Stable names and storage need a StatefulSet with serviceName ledger, a headless Service named ledger and a volumeClaimTemplate named data.
+  - name: ledger-keeps-identity
+    description: A deleted ledger Pod returns with the same name and the same data
+    type: file
+    source: validation/validate-ledger-identity.sh
+    hint: Mount the volume claim template data at /data in the container.
+teardown:
+  keepCluster: false

@@ -1,0 +1,289 @@
+# Knowledge check for section-030.
+schema_version: 1
+kind: question_bank
+id: ats027-030
+course_id: ATS027
+exam_code: CKAD
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: "section"
+  id: "section-030"
+  title: "Understand multi-container Pod design patterns (e.g. sidecar, init and others)"
+questions:
+  - id: ats027-030-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Use an init container to enforce startup order"
+    source_readings:
+      - sections/section-030/module-01/course-01-init-containers-and-sidecar-patterns.md
+    prompt: "The `scout` Pod must not start its application until a setup step has finished writing a file. Which design guarantees the order?"
+    options:
+      - id: a
+        text: "Put both steps in `containers` and rely on the order in the list."
+        explanation: "Regular containers start without waiting for each other."
+      - id: b
+        text: "Run the setup step as an init container and the application as a regular container."
+        explanation: "Correct. The kubelet runs init containers one at a time to completion before it starts the regular containers."
+      - id: c
+        text: "Add a second Pod with a longer name."
+        explanation: "Names do not order startup."
+      - id: d
+        text: "Set `restartPolicy: Never` on the Pod."
+        explanation: "That field controls restarts, not start order."
+    correct_option: b
+    explanation: "The kubelet runs init containers one at a time to completion before it starts the regular containers."
+
+  - id: ats027-030-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe what happens when an init container fails"
+    source_readings:
+      - sections/section-030/module-01/course-01-init-containers-and-sidecar-patterns.md
+    prompt: "The init container `wait-for-probe` in a Pod `scout` keeps exiting with an error, and the Pod restart policy is `Always`. What state does the Pod show?"
+    options:
+      - id: a
+        text: "The application container runs next to the failing one."
+        explanation: "Application containers start only after every init container succeeds."
+      - id: b
+        text: "The Pod is `Running`, and the Init container is ignored."
+        explanation: "The Pod is not ready while an init container fails."
+      - id: c
+        text: "The scheduler deletes the Pod and creates a new one."
+        explanation: "The kubelet retries the init container in the same Pod."
+      - id: d
+        text: "The kubelet keeps retrying the init container, and the application never starts."
+        explanation: "Correct. With a restart policy of `Always` or `OnFailure`, the kubelet restarts the failing init container until it succeeds."
+    correct_option: d
+    explanation: "With a restart policy of `Always` or `OnFailure`, the kubelet restarts the failing init container until it succeeds."
+
+  - id: ats027-030-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe how containers in one Pod share a network"
+    source_readings:
+      - sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
+    prompt: "Two containers in the same `shuttle` Pod are both configured to listen on port 8080. What happens?"
+    options:
+      - id: a
+        text: "Both start, and the kubelet sends half of the requests to each."
+        explanation: "The kubelet does not balance between containers."
+      - id: b
+        text: "The second container to bind fails because the Pod shares one network namespace and the port is already in use."
+        explanation: "Correct. All containers of a Pod share the same IP address and port space."
+      - id: c
+        text: "Both start, because each container has its own port space."
+        explanation: "Containers of one Pod share the port space."
+      - id: d
+        text: "The API server rejects the Pod when it is created."
+        explanation: "The API server does not check what a process binds."
+    correct_option: b
+    explanation: "All containers of a Pod share the same IP address and port space."
+
+  - id: ats027-030-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Share files between containers with an emptyDir volume"
+    source_readings:
+      - sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
+    prompt: "The container `scout` writes log files to `/var/log/app`. A second container `log-shipper` in the same Pod must read them. What is the simplest correct design?"
+    options:
+      - id: a
+        text: "Use `hostNetwork: true` for both containers."
+        explanation: "That shares the node network, not files."
+      - id: b
+        text: "Set the same environment variable in both containers."
+        explanation: "Variables carry values and not files."
+      - id: c
+        text: "Declare an `emptyDir` volume and mount it in both containers."
+        explanation: "Correct. An `emptyDir` volume is shared by all containers that mount it, for the life of the Pod."
+      - id: d
+        text: "Copy the files with `kubectl cp` every minute."
+        explanation: "That is manual and not a Pod design."
+    correct_option: c
+    explanation: "An `emptyDir` volume is shared by all containers that mount it, for the life of the Pod."
+
+  - id: ats027-030-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe the ambassador pattern"
+    source_readings:
+      - sections/section-030/module-02/course-01-ambassador-proxy-over-localhost.md
+    prompt: "The `scout` application always connects to `localhost:6379`. An ambassador container in the same Pod picks the right Redis server and forwards each connection. What is the benefit?"
+    options:
+      - id: a
+        text: "The application can use a different Pod IP for each request."
+        explanation: "The Pod IP does not change per request."
+      - id: b
+        text: "The application needs no code to choose or find the backend, because the proxy next to it does."
+        explanation: "Correct. The ambassador hides the backend location behind one local address."
+      - id: c
+        text: "The kubelet encrypts all the traffic in the Pod."
+        explanation: "An ambassador does not encrypt traffic unless it is built to."
+      - id: d
+        text: "The scheduler places the application on the same node as the Redis server."
+        explanation: "Scheduling is not changed by a container pattern."
+    correct_option: b
+    explanation: "The ambassador hides the backend location behind one local address."
+
+  - id: ats027-030-q06
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Choose the address an application uses to reach an ambassador container"
+    source_readings:
+      - sections/section-030/module-02/course-01-ambassador-proxy-over-localhost.md
+    prompt: "An ambassador container in the `shuttle` Pod listens on port 9000. Which address does the application container in the same Pod use?"
+    options:
+      - id: a
+        text: "The ClusterIP of a Service named after the container."
+        explanation: "No Service exists for a container."
+      - id: b
+        text: "The DNS name `ambassador.starfleet.svc`."
+        explanation: "Containers have no DNS names."
+      - id: c
+        text: "`localhost:9000`"
+        explanation: "Correct. Containers of one Pod share a network namespace, so they reach each other on `localhost`."
+      - id: d
+        text: "The node IP and port 9000."
+        explanation: "The port is not published on the node."
+    correct_option: c
+    explanation: "Containers of one Pod share a network namespace, so they reach each other on `localhost`."
+
+  - id: ats027-030-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe the adapter pattern"
+    source_readings:
+      - sections/section-030/module-02/course-02-adapter-output-translation.md
+    prompt: "The application in the `probe` Pod writes metrics in its own text format. A second container reads them and serves them in the format that Prometheus expects. Which pattern is this?"
+    options:
+      - id: a
+        text: "Adapter, because it translates the output of the application."
+        explanation: "Correct. An adapter changes the output into a standard form for a consumer."
+      - id: b
+        text: "Ambassador, because it proxies outgoing connections."
+        explanation: "An ambassador proxies the application's outgoing connections."
+      - id: c
+        text: "Init container, because it runs once."
+        explanation: "The container keeps serving, so it is not an init step."
+      - id: d
+        text: "DaemonSet, because it runs beside the application."
+        explanation: "A DaemonSet is a resource kind and not a Pod pattern."
+    correct_option: a
+    explanation: "An adapter changes the output into a standard form for a consumer."
+
+  - id: ats027-030-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Pick the pattern from the data direction"
+    source_readings:
+      - sections/section-030/module-02/course-02-adapter-output-translation.md
+    prompt: "A container in the `drifter` Pod reads log lines from a shared volume and rewrites each as one JSON object for a log system. The application is not changed. Which description fits?"
+    options:
+      - id: a
+        text: "It is an ambassador that proxies a database."
+        explanation: "It handles output, not outgoing connections."
+      - id: b
+        text: "It is an adapter that translates application output."
+        explanation: "Correct. It converts the output of the application without changing the application."
+      - id: c
+        text: "It is an init container that prepares configuration."
+        explanation: "It keeps running after startup."
+      - id: d
+        text: "It is a Job that runs once."
+        explanation: "A Job is not a container in the Pod pattern."
+    correct_option: b
+    explanation: "It converts the output of the application without changing the application."
+
+  - id: ats027-030-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Declare a native sidecar container"
+    source_readings:
+      - sections/section-030/module-03/course-01-restartable-init-containers.md
+    prompt: "In Kubernetes v1.35, how do you declare a native sidecar container in the `scout` Pod?"
+    options:
+      - id: a
+        text: "Add it to `containers` with `sidecar: true`."
+        explanation: "There is no `sidecar` field."
+      - id: b
+        text: "Add it to `initContainers` with `restartPolicy: Always`."
+        explanation: "Correct. A restartable init container starts before the application containers and runs for the life of the Pod."
+      - id: c
+        text: "Add it to `ephemeralContainers`."
+        explanation: "Ephemeral containers are for debugging a running Pod."
+      - id: d
+        text: "Add it to `containers` with `restartPolicy: Never`."
+        explanation: "That does not mark a sidecar."
+    correct_option: b
+    explanation: "A restartable init container starts before the application containers and runs for the life of the Pod."
+
+  - id: ats027-030-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Contrast a native sidecar with a regular init container"
+    source_readings:
+      - sections/section-030/module-03/course-01-restartable-init-containers.md
+    prompt: "Which statement is true about a restartable init container with `restartPolicy: Always` compared with a regular init container?"
+    options:
+      - id: a
+        text: "It must finish before the next init container starts."
+        explanation: "It keeps running and does not need to finish."
+      - id: b
+        text: "It is removed from the Pod after the application starts."
+        explanation: "It stays for the life of the Pod."
+      - id: c
+        text: "It keeps running next to the application containers after it has started, while a regular init container must exit."
+        explanation: "Correct. The kubelet starts it in init order, and then it runs together with the application containers."
+      - id: d
+        text: "It runs only on a node that has a DaemonSet."
+        explanation: "There is no such requirement."
+    correct_option: c
+    explanation: "The kubelet starts it in init order, and then it runs together with the application containers."
+
+  - id: ats027-030-q11
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Complete a Job whose Pod has a log-shipping sidecar"
+    source_readings:
+      - sections/section-030/module-03/course-02-shutdown-order-and-jobs-with-sidecars.md
+    prompt: "A Job for `shuttle` runs a main container and a log-shipping container that never exits. The log shipper is listed under `containers`. The Job never completes. What fixes it?"
+    options:
+      - id: a
+        text: "Move the log shipper to `initContainers` with `restartPolicy: Always`."
+        explanation: "Correct. Such a sidecar does not stop the Pod from completing once the main container has finished. The kubelet then stops the sidecar."
+      - id: b
+        text: "Set `backoffLimit: 0`."
+        explanation: "This limits retries and does not end the Pod."
+      - id: c
+        text: "Set `parallelism: 2`."
+        explanation: "This runs more Pods and does not end the first one."
+      - id: d
+        text: "Set `restartPolicy: Always` in the Job Pod template."
+        explanation: "A Job does not accept that value."
+    correct_option: a
+    explanation: "Such a sidecar does not stop the Pod from completing once the main container has finished. The kubelet then stops the sidecar."
+
+  - id: ats027-030-q12
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "State the shutdown order of native sidecars"
+    source_readings:
+      - sections/section-030/module-03/course-02-shutdown-order-and-jobs-with-sidecars.md
+    prompt: "A `scout` Pod is deleted. It has an application container and a native sidecar `log-shipper` that must flush the last logs. What is the order of termination?"
+    options:
+      - id: a
+        text: "The sidecar stops first so that it can flush."
+        explanation: "The sidecar keeps running while the application stops."
+      - id: b
+        text: "Both stop at the same time and the order is random."
+        explanation: "The kubelet orders them."
+      - id: c
+        text: "The kubelet stops the sidecar only when the grace period is over."
+        explanation: "The sidecar stops after the application, not after the full period."
+      - id: d
+        text: "The kubelet stops the application container first. The sidecars stop afterwards, in the reverse of their order in the spec."
+        explanation: "Correct. This lets a sidecar handle what the application sends while it stops."
+    correct_option: d
+    explanation: "This lets a sidecar handle what the application sends while it stops."
+

@@ -83,6 +83,15 @@ The custom columns show each volume's recorded claim association, reclaim policy
 
 You can now separate workload cleanup from storage deletion and recovery. A retention decision preserves an opportunity to recover data, while backups and a tested restoration process establish how that recovery can succeed.
 
+## Reading a released volume
+
+When a claim bound to a `Retain` volume is deleted, the PersistentVolume object stays and its status phase changes from `Bound` to `Released`. The `spec.claimRef` field still points at the deleted claim, including its UID. The PersistentVolume controller therefore does not bind a new claim to it, even when the new claim has the same name and asks for the same size, because the stored UID no longer matches.
+
+To make the volume available again, an administrator first copies out or checks the data on the backend. Then the administrator removes the stale `claimRef`, which moves the volume to `Available`, or creates a new PersistentVolume that points at the same backend. Only after that can a new claim bind to it. Nothing in this procedure checks that the data is consistent for the application, so verify the application records after the new claim mounts.
+
+The reclaim policy of an existing volume can be changed with a patch to `spec.persistentVolumeReclaimPolicy`. Do this before you delete a claim whose data you must keep. A volume that a dynamic provisioner created takes its policy from the StorageClass `reclaimPolicy` at creation time, which is `Delete` when the class sets nothing. Changing the class later does not change volumes that already exist.
+
+
 ## Common pitfalls
 
 > [!WARNING]

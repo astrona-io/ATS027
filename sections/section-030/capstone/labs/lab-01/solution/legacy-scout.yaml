@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legacy-scout
+  namespace: starfleet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: legacy-scout
+  template:
+    metadata:
+      labels:
+        app: legacy-scout
+    spec:
+      terminationGracePeriodSeconds: 10
+      initContainers:
+        - name: fetch-config
+          image: docker.io/library/busybox:1.37.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              until wget -q -T 2 -O /dev/null http://probe.starfleet.svc.cluster.local/; do
+                echo "waiting for the probe Service"
+                sleep 2
+              done
+              printf '%s' "http://probe.starfleet.svc.cluster.local" > /shared/upstream.txt
+              echo "upstream written"
+          volumeMounts:
+            - name: shared
+              mountPath: /shared
+        - name: ambassador
+          image: docker.io/library/python:3.13-alpine
+          restartPolicy: Always
+          command: ["python", "/code/proxy.py"]
+          env:
+            - name: UPSTREAM_FILE
+              value: /shared/upstream.txt
+          startupProbe:
+            exec:
+              command: ["wget", "-q", "-T", "2", "-O", "/dev/null", "http://127.0.0.1:9000/healthz"]
+            periodSeconds: 2
+            failureThreshold: 15
+          volumeMounts:
+            - name: code
+              mountPath: /code
+              readOnly: true
+            - name: shared
+              mountPath: /shared
+              readOnly: true
+      containers:
+        - name: legacy
+          image: docker.io/library/busybox:1.37.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              while true; do
+                echo "time=$(date +%s)" >> /report/report.txt
+                if reply="$(wget -q -T 2 -O - http://127.0.0.1:9000/ 2>/dev/null)"; then
+                  echo "status=ok" >> /report/report.txt
+                  echo "reply=$reply" >> /report/report.txt
+                  echo "legacy: uplink ok"
+                else
+                  echo "status=error" >> /report/report.txt
+                  echo "legacy: uplink failed"
+                fi
+                sleep 5
+              done
+          volumeMounts:
+            - name: report
+              mountPath: /report
+        - name: adapter
+          image: docker.io/library/busybox:1.37.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              trap 'exit 0' TERM
+              tail -n +1 -F /report/report.txt | while IFS= read -r line; do
+                echo "$line" | sed 's/^\([^=]*\)=\(.*\)$/{"\1":"\2"}/'
+              done &
+              wait $!
+          volumeMounts:
+            - name: report
+              mountPath: /report
+              readOnly: true
+      volumes:
+        - name: report
+          emptyDir: {}
+        - name: shared
+          emptyDir: {}
+        - name: code
+          configMap:
+            name: ambassador-code

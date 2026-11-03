@@ -1,0 +1,289 @@
+# Knowledge check for section-010.
+schema_version: 1
+kind: question_bank
+id: ats027-010
+course_id: ATS027
+exam_code: CKAD
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: "section"
+  id: "section-010"
+  title: "Define, build and modify container images"
+questions:
+  - id: ats027-010-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain why a digest identifies image content while a tag can move"
+    source_readings:
+      - sections/section-010/module-01/course-01-layers-tags-and-digests.md
+    prompt: "The `starfleet` Deployment `scout` uses the image `registry.example/scout:1.4`. The team pushes a rebuilt image under the same tag, and the nodes that pull it later run different content than the nodes that pulled earlier. Which image reference always points at the same content?"
+    options:
+      - id: a
+        text: "`registry.example/scout:1.4-latest`"
+        explanation: "This is only another tag, and any tag can be moved to different content."
+      - id: b
+        text: "`registry.example/scout@sha256:<digest>`"
+        explanation: "Correct. A digest is the hash of the image manifest, so it always identifies the same content. A tag is a movable name."
+      - id: c
+        text: "`registry.example/scout:1.4` with `imagePullPolicy: IfNotPresent`"
+        explanation: "This only changes when the kubelet pulls. The tag can still point at new content on a node that pulls later."
+      - id: d
+        text: "`registry.example/scout` with no tag"
+        explanation: "With no tag the runtime uses `latest`, which is the most movable tag."
+    correct_option: b
+    explanation: "A digest is the hash of the image manifest, so it always identifies the same content. A tag is a movable name."
+
+  - id: ats027-010-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Describe how image layers are shared and reused across images and pulls"
+    source_readings:
+      - sections/section-010/module-01/course-01-layers-tags-and-digests.md
+    prompt: "A node already runs a `probe` image. You deploy a `shuttle` image that is built from the same base image and adds one small layer. What does the container runtime download for `shuttle`?"
+    options:
+      - id: a
+        text: "The whole `shuttle` image, because each image is stored as one file."
+        explanation: "Images are stored as separate layers, not as one file."
+      - id: b
+        text: "Only the base image, because the added layer is built on the node."
+        explanation: "The runtime never builds a layer. Every layer comes from the registry."
+      - id: c
+        text: "Only the layers that the node does not have yet, which here is the added layer."
+        explanation: "Correct. Layers are addressed by content hash, so the runtime reuses the ones it already stores and downloads the missing ones."
+      - id: d
+        text: "Nothing, because both images share a repository name prefix."
+        explanation: "Sharing a name prefix has no effect. Reuse depends on identical layer content."
+    correct_option: c
+    explanation: "Layers are addressed by content hash, so the runtime reuses the ones it already stores and downloads the missing ones."
+
+  - id: ats027-010-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict which image the kubelet uses from the tag and the imagePullPolicy"
+    source_readings:
+      - sections/section-010/module-01/course-02-from-build-to-image-pull.md
+    prompt: "The `probe` Pod uses `registry.example/probe:2.0` and sets no `imagePullPolicy`. A node already stores an image with that tag. The registry now holds different content under `2.0`. A new Pod is scheduled on that node. What happens?"
+    options:
+      - id: a
+        text: "The kubelet uses the stored image, because the default policy for a tag other than `latest` is `IfNotPresent`."
+        explanation: "Correct. With `IfNotPresent` the kubelet pulls only when the image is missing on the node."
+      - id: b
+        text: "The kubelet always pulls, because the default policy is `Always` for every tag."
+        explanation: "`Always` is the default only for `latest` or a missing tag."
+      - id: c
+        text: "The Pod fails with `ErrImagePull`, because the stored image is out of date."
+        explanation: "The kubelet does not compare content with the registry under `IfNotPresent`."
+      - id: d
+        text: "The scheduler picks a different node that has no copy of the image."
+        explanation: "The scheduler does not choose nodes by image freshness."
+    correct_option: a
+    explanation: "With `IfNotPresent` the kubelet pulls only when the image is missing on the node."
+
+  - id: ats027-010-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Make a container run as a non-root user that the kubelet can verify"
+    source_readings:
+      - sections/section-010/module-02/course-01-building-an-image-with-a-clear-runtime-contract.md
+    prompt: "A Pod in `starfleet` sets `securityContext.runAsNonRoot: true`. Its image declares `USER app`, with a name and no number. The container stays in `CreateContainerConfigError`. What fixes it?"
+    options:
+      - id: a
+        text: "Remove `USER app` so the image runs as the default user."
+        explanation: "The default user is root, which `runAsNonRoot: true` rejects."
+      - id: b
+        text: "Set `allowPrivilegeEscalation: false` on the container."
+        explanation: "That field controls privilege gain, not how the kubelet verifies the user."
+      - id: c
+        text: "Set `runAsNonRoot: false` so that the kubelet skips the check."
+        explanation: "This turns off the protection instead of fixing the image."
+      - id: d
+        text: "Set a numeric user, for example `runAsUser: 10001`, or declare a numeric `USER` in the image."
+        explanation: "Correct. The kubelet can verify only a numeric user ID. It cannot map a user name from the image to a number."
+    correct_option: d
+    explanation: "The kubelet can verify only a numeric user ID. It cannot map a user name from the image to a number."
+
+  - id: ats027-010-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Distinguish documentation instructions from runtime behaviour in an image"
+    source_readings:
+      - sections/section-010/module-02/course-01-building-an-image-with-a-clear-runtime-contract.md
+    prompt: "A Dockerfile for `scout` contains `EXPOSE 8080`. A teammate says that the instruction opens port 8080 for other Pods. What is correct?"
+    options:
+      - id: a
+        text: "`EXPOSE` creates a Kubernetes Service for the port."
+        explanation: "The instruction creates no Kubernetes objects."
+      - id: b
+        text: "`EXPOSE` only records the port as image metadata. The container must still listen on it, and a Service is what routes traffic."
+        explanation: "Correct. The instruction is documentation in the image metadata and publishes nothing."
+      - id: c
+        text: "`EXPOSE` makes the kubelet add a firewall rule on the node."
+        explanation: "The kubelet does not read this instruction to configure the node."
+      - id: d
+        text: "`EXPOSE` makes the process listen on that port."
+        explanation: "The process opens its own sockets. The instruction does not change the process."
+    correct_option: b
+    explanation: "The instruction is documentation in the image metadata and publishes nothing."
+
+  - id: ats027-010-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Order Dockerfile instructions so that the layer cache is reused"
+    source_readings:
+      - sections/section-010/module-03/course-01-dockerfile-instructions-and-the-layer-cache.md
+    prompt: "A Python Dockerfile for `scout` runs `COPY . .` and then `RUN pip install -r requirements.txt`. Each small change in a source file makes the build reinstall every dependency. Which change keeps the cache for the install step?"
+    options:
+      - id: a
+        text: "Move `RUN pip install` into the `CMD` instruction."
+        explanation: "`CMD` runs at container start, so it would install on every start."
+      - id: b
+        text: "Add `--no-cache` to the build command."
+        explanation: "This disables the cache, so every step always runs."
+      - id: c
+        text: "Copy only `requirements.txt`, run `pip install`, and then run `COPY . .` for the source."
+        explanation: "Correct. A layer is rebuilt only when its instruction or its inputs change. The dependency layer now changes only when `requirements.txt` changes."
+      - id: d
+        text: "Put `COPY . .` as the last line of the Dockerfile and keep `pip install` first, without copying `requirements.txt`."
+        explanation: "The install step needs `requirements.txt` in the image, so it would fail."
+    correct_option: c
+    explanation: "A layer is rebuilt only when its instruction or its inputs change. The dependency layer now changes only when `requirements.txt` changes."
+
+  - id: ats027-010-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain what a multi-stage build puts in the final image"
+    source_readings:
+      - sections/section-010/module-03/course-02-multi-stage-builds-and-small-images.md
+    prompt: "A Dockerfile has a first stage `FROM golang AS build` that compiles `probe` and a final stage `FROM alpine` that contains `COPY --from=build /out/probe /probe`. What does the final image contain?"
+    options:
+      - id: a
+        text: "The files of the final stage plus only the copied `/probe` file, with no compiler or source from the first stage."
+        explanation: "Correct. Only the final stage becomes the image. Files from an earlier stage are included only when copied."
+      - id: b
+        text: "Every layer of both stages, with the compiler included."
+        explanation: "Layers of earlier stages are not part of the final image."
+      - id: c
+        text: "Only the `/probe` file, because `COPY --from` replaces the base image."
+        explanation: "The `alpine` base layers stay in the final image."
+      - id: d
+        text: "The Go toolchain, because `AS build` marks it as required at runtime."
+        explanation: "The `AS` keyword only names a stage."
+    correct_option: a
+    explanation: "Only the final stage becomes the image. Files from an earlier stage are included only when copied."
+
+  - id: ats027-010-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Build one named stage of a multi-stage Dockerfile"
+    source_readings:
+      - sections/section-010/module-03/course-02-multi-stage-builds-and-small-images.md
+    prompt: "The Dockerfile for `shuttle` has stages named `build`, `test` and `runtime`. You want to build an image that stops after the `test` stage. Which option does that with `podman build` or `docker build`?"
+    options:
+      - id: a
+        text: "`--stage test`"
+        explanation: "There is no `--stage` option."
+      - id: b
+        text: "`--from test`"
+        explanation: "`--from` is not a build option for stopping at a stage."
+      - id: c
+        text: "`--squash test`"
+        explanation: "`--squash` merges layers and does not select a stage."
+      - id: d
+        text: "`--target test`"
+        explanation: "Correct. `--target` builds up to and including the named stage."
+    correct_option: d
+    explanation: "`--target` builds up to and including the named stage."
+
+  - id: ats027-010-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict the command a container runs from ENTRYPOINT, CMD, command and args"
+    source_readings:
+      - sections/section-010/module-04/course-01-entrypoint-cmd-and-pod-command-args.md
+    prompt: "The image for `probe` sets `ENTRYPOINT [\"/bin/probe\"]` and `CMD [\"--port=80\"]`. The Pod spec sets only `args: [\"--port=9090\"]` for the container. Which command does the container run?"
+    options:
+      - id: a
+        text: "`/bin/probe --port=9090`"
+        explanation: "Correct. The Pod field `args` replaces the image `CMD`, and the image `ENTRYPOINT` stays."
+      - id: b
+        text: "`/bin/probe --port=80 --port=9090`"
+        explanation: "The Pod `args` replace `CMD`. They are not added to it."
+      - id: c
+        text: "`--port=9090` alone"
+        explanation: "The image `ENTRYPOINT` stays when only `args` is set."
+      - id: d
+        text: "`/bin/probe`, because `args` need `command` to take effect"
+        explanation: "`args` take effect without `command`."
+    correct_option: a
+    explanation: "The Pod field `args` replaces the image `CMD`, and the image `ENTRYPOINT` stays."
+
+  - id: ats027-010-q10
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Predict the effect of setting only command on an image that has ENTRYPOINT and CMD"
+    source_readings:
+      - sections/section-010/module-04/course-01-entrypoint-cmd-and-pod-command-args.md
+    prompt: "The image for `probe` sets `ENTRYPOINT [\"/bin/probe\"]` and `CMD [\"--port=80\"]`. The Pod spec sets only `command: [\"/bin/scan\"]` and no `args`. What runs?"
+    options:
+      - id: a
+        text: "`/bin/scan --port=80`"
+        explanation: "The image `CMD` is ignored when the Pod sets `command`."
+      - id: b
+        text: "`/bin/probe /bin/scan`"
+        explanation: "The Pod `command` replaces the `ENTRYPOINT` and is not appended to it."
+      - id: c
+        text: "`/bin/scan` with no arguments"
+        explanation: "Correct. Setting `command` replaces `ENTRYPOINT` and also drops the image `CMD`, so no default arguments remain."
+      - id: d
+        text: "The Pod is rejected, because `command` needs `args`."
+        explanation: "`args` is optional."
+    correct_option: c
+    explanation: "Setting `command` replaces `ENTRYPOINT` and also drops the image `CMD`, so no default arguments remain."
+
+  - id: ats027-010-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Make a locally built image available to cluster nodes"
+    source_readings:
+      - sections/section-010/module-04/course-02-tagging-loading-and-updating-an-image.md
+    prompt: "You tag an image `scout:dev` on your laptop. The kind cluster nodes cannot reach a registry that holds it, and the Pod shows `ErrImagePull`. What must you do?"
+    options:
+      - id: a
+        text: "Run `kubectl apply` again, because the kubelet then copies the image from your laptop."
+        explanation: "The kubelet cannot read your laptop image store."
+      - id: b
+        text: "Set `restartPolicy: Never` so that the kubelet stops pulling."
+        explanation: "`restartPolicy` has no effect on image pulls."
+      - id: c
+        text: "Change the tag to `latest`, because that tag is always found on the node."
+        explanation: "`latest` makes the kubelet pull from a registry, so it fails more."
+      - id: d
+        text: "Save the image to an archive and load it into every node, then use `imagePullPolicy: IfNotPresent` or `Never`."
+        explanation: "Correct. The node runtime must hold the image locally. A pull policy that does not force a registry pull lets the kubelet use it."
+    correct_option: d
+    explanation: "The node runtime must hold the image locally. A pull policy that does not force a registry pull lets the kubelet use it."
+
+  - id: ats027-010-q12
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Update the image of a running Deployment"
+    source_readings:
+      - sections/section-010/module-04/course-02-tagging-loading-and-updating-an-image.md
+    prompt: "The Deployment `scout` in `starfleet` has a container named `scout`. You need it to run `registry.example/scout:1.5`. Which command does that and starts a rolling update?"
+    options:
+      - id: a
+        text: "`kubectl set image deployment/scout scout=registry.example/scout:1.5 -n starfleet`"
+        explanation: "Correct. The command sets the container image in the Pod template, and the Deployment controller then rolls out new Pods."
+      - id: b
+        text: "`kubectl rollout restart deployment/scout -n starfleet`"
+        explanation: "This restarts Pods with the same template, so the image stays the same."
+      - id: c
+        text: "`kubectl scale deployment/scout --replicas=1.5 -n starfleet`"
+        explanation: "`scale` changes the replica count, not the image."
+      - id: d
+        text: "`kubectl label deployment/scout image=1.5 -n starfleet`"
+        explanation: "A label does not change the Pod template."
+    correct_option: a
+    explanation: "The command sets the container image in the Pod template, and the Deployment controller then rolls out new Pods."
+

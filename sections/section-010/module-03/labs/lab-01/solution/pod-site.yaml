@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: site
+  namespace: starfleet
+  labels:
+    app: site
+spec:
+  containers:
+  - name: web
+    image: localhost/ckad-site:v1
+    imagePullPolicy: Never
+    ports:
+    - containerPort: 8080

@@ -1,0 +1,55 @@
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-027-lab-010-capstone
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    preloadImages:
+    - docker.io/library/busybox:1.37.0
+    - docker.io/library/python:3.13-alpine
+bootstrap:
+  init:
+  - name: seed-cluster
+    description: Create the namespaces, the shuttle client Pod and the scout Service
+    type: file
+    source: bootstrap/01-seed-cluster.sh
+testing:
+  init:
+  - name: apply-solution
+    description: Build and load v1 and v2, roll out both and record the image identity
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: image-has-no-build-files-and-non-root
+    description: The running scout container is non-root and holds no build-only files
+    type: file
+    source: validation/validate-non-root-no-build-files.sh
+    hint: Use a multi-stage build, copy only index.html into the final stage and select a numeric USER again in the derived image.
+  - name: serves-v2-on-9090-through-service
+    description: shuttle reaches release=v2 through the scout Service on port 80
+    type: file
+    source: validation/validate-serves-v2.sh
+    hint: The Service starts with targetPort 8080. The container must listen on 9090 after the args override, so the Service must follow.
+  - name: args-override-keeps-entrypoint
+    description: httpd runs with the image ENTRYPOINT and the replaced arguments
+    type: file
+    source: validation/validate-args-override.sh
+    hint: Set args to -p 9090 and leave command unset.
+  - name: rolled-out-after-v1
+    description: Deployment scout is fully rolled out on v2 and v1 was rolled out first
+    type: file
+    source: validation/validate-rolled-out.sh
+    hint: Create the Deployment with v1 first, then update the image. At least two ReplicaSets must exist.
+  - name: release-record-matches-running-image
+    description: ConfigMap scout-release records the version and the image ID of the running Pods
+    type: file
+    source: validation/validate-release-record.sh
+    hint: Read .status.containerStatuses[0].imageID from a running scout Pod and store it under imageID with version v2.
+teardown:
+  keepCluster: false

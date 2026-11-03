@@ -1,0 +1,565 @@
+# Final knowledge check for the Application Design and Build domain.
+schema_version: 1
+kind: question_bank
+id: ats027-final
+course_id: ATS027
+exam_code: CKAD
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: "domain"
+  id: "application-design-and-build"
+  title: "Application Design and Build"
+questions:
+  - id: ats027-final-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Predict the default pull policy for the latest tag"
+    source_readings:
+      - sections/section-010/module-01/course-02-from-build-to-image-pull.md
+    prompt: "The Pod `scout` uses `registry.example/scout:latest` and sets no `imagePullPolicy`. A copy of the image is already on the node. What does the kubelet do when it starts a container?"
+    options:
+      - id: a
+        text: "It uses the stored copy, because the image exists on the node."
+        explanation: "That is the default for tags other than `latest`."
+      - id: b
+        text: "It contacts the registry, because the default policy for `latest` is `Always`."
+        explanation: "Correct. With `Always` the kubelet resolves the tag against the registry each time, and reuses local layers when the digest matches."
+      - id: c
+        text: "It never pulls, because `latest` marks a local image."
+        explanation: "`latest` is an ordinary tag with no special local meaning."
+      - id: d
+        text: "It fails the Pod, because `latest` needs a digest."
+        explanation: "A digest is not required."
+    correct_option: b
+    explanation: "With `Always` the kubelet resolves the tag against the registry each time, and reuses local layers when the digest matches."
+
+  - id: ats027-final-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain the signal handling of shell form and exec form"
+    source_readings:
+      - sections/section-010/module-04/course-01-entrypoint-cmd-and-pod-command-args.md
+    prompt: "The image for `probe` uses `ENTRYPOINT /bin/probe --serve` in shell form. Pods stop slowly, because the application never receives `SIGTERM`. What is the cause and the fix?"
+    options:
+      - id: a
+        text: "The kubelet sends `SIGKILL` first. Set `terminationGracePeriodSeconds: 0`."
+        explanation: "The kubelet sends `SIGTERM` first, and a zero period would be worse."
+      - id: b
+        text: "The shell form runs the process under `/bin/sh -c`, so the shell is PID 1. Use the exec form `[\"/bin/probe\", \"--serve\"]`."
+        explanation: "Correct. In exec form the application is PID 1 and receives the signal."
+      - id: c
+        text: "`ENTRYPOINT` blocks signals. Use `CMD` instead."
+        explanation: "`CMD` in shell form has the same behaviour."
+      - id: d
+        text: "The runtime drops `SIGTERM` for non-root users. Set `runAsUser: 0`."
+        explanation: "Running as root does not change signal delivery."
+    correct_option: b
+    explanation: "In exec form the application is PID 1 and receives the signal."
+
+  - id: ats027-final-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain why deleting a file in a later layer does not shrink an image"
+    source_readings:
+      - sections/section-010/module-01/course-01-layers-tags-and-digests.md
+    prompt: "A Dockerfile has `RUN curl -o /tmp/big.tar https://example/big.tar` followed by `RUN rm /tmp/big.tar`. The image is still large. Why?"
+    options:
+      - id: a
+        text: "The `rm` instruction only works with `COPY`."
+        explanation: "`rm` works in any `RUN` command."
+      - id: b
+        text: "The runtime restores deleted files when the container starts."
+        explanation: "It does not restore files."
+      - id: c
+        text: "The first layer still stores the file, and the second layer only hides it."
+        explanation: "Correct. Layers are read-only, so a later layer can only mark the file as deleted. Download and delete in the same `RUN` instead."
+      - id: d
+        text: "The registry compresses deleted files again on push."
+        explanation: "Registries do not do this."
+    correct_option: c
+    explanation: "Layers are read-only, so a later layer can only mark the file as deleted. Download and delete in the same `RUN` instead."
+
+  - id: ats027-final-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Handle a Pod that uses imagePullPolicy Never with a missing image"
+    source_readings:
+      - sections/section-010/module-04/course-02-tagging-loading-and-updating-an-image.md
+    prompt: "The Pod `shuttle` uses `scout:dev` with `imagePullPolicy: Never`. You forgot to load the image into the node. What does the Pod show?"
+    options:
+      - id: a
+        text: "`ErrImagePull`, because the kubelet tried the registry."
+        explanation: "`Never` stops pulls, so no registry attempt happens."
+      - id: b
+        text: "`Running`, because the kubelet builds the image."
+        explanation: "The kubelet cannot build images."
+      - id: c
+        text: "`Pending`, because the scheduler needs a node with the image."
+        explanation: "The scheduler does not check images."
+      - id: d
+        text: "`ErrImageNeverPull`, because the image is not on the node and pulling is not allowed."
+        explanation: "Correct. The kubelet reports that the image is absent and that the policy forbids a pull."
+    correct_option: d
+    explanation: "The kubelet reports that the image is absent and that the policy forbids a pull."
+
+  - id: ats027-final-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Combine package index update and install in one RUN"
+    source_readings:
+      - sections/section-010/module-03/course-01-dockerfile-instructions-and-the-layer-cache.md
+    prompt: "A Dockerfile has `RUN apt-get update` on one line and `RUN apt-get install -y curl` on the next. A month later the install fails with old package versions, although the file did not change. What is the cause and the fix?"
+    options:
+      - id: a
+        text: "The cache reused the old `update` layer. Put both commands in one `RUN`."
+        explanation: "Correct. A cached `update` layer holds an old package index. One `RUN` makes both change together."
+      - id: b
+        text: "The kubelet caches packages. Set `imagePullPolicy: Always`."
+        explanation: "This does not affect builds."
+      - id: c
+        text: "`apt-get` is not allowed in a Dockerfile. Use `ADD`."
+        explanation: "`RUN apt-get` is valid."
+      - id: d
+        text: "The registry removed the packages. Use a digest."
+        explanation: "A digest identifies images, not packages."
+    correct_option: a
+    explanation: "A cached `update` layer holds an old package index. One `RUN` makes both change together."
+
+  - id: ats027-final-q06
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Describe what tagging an image does"
+    source_readings:
+      - sections/section-010/module-04/course-02-tagging-loading-and-updating-an-image.md
+    prompt: "You run `podman tag scout:dev registry.example/starfleet/scout:1.0`. What did the command do?"
+    options:
+      - id: a
+        text: "It pushed the image to `registry.example`."
+        explanation: "`tag` never contacts a registry."
+      - id: b
+        text: "It copied all layers into a second image."
+        explanation: "No layers are copied."
+      - id: c
+        text: "It rebuilt the image with the new version in it."
+        explanation: "`tag` does not build."
+      - id: d
+        text: "It added a second name that points at the same image."
+        explanation: "Correct. A tag is a name for an image ID, and the push is a separate command."
+    correct_option: d
+    explanation: "A tag is a name for an image ID, and the push is a separate command."
+
+  - id: ats027-final-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read a Job's index in Indexed completion mode"
+    source_readings:
+      - sections/section-020/module-05/course-01-completions-parallelism-and-failure-limits.md
+    prompt: "A Job for `scout` uses `completionMode: Indexed` with `completions: 5`. How does each Pod know which part of the work is its own?"
+    options:
+      - id: a
+        text: "The Job controller gives each Pod a completion index, available as the `JOB_COMPLETION_INDEX` environment variable and an annotation."
+        explanation: "Correct. Indexes run from 0 to 4, and each index must succeed once."
+      - id: b
+        text: "The Pod name always ends in the index of the Job."
+        explanation: "The name has a random suffix."
+      - id: c
+        text: "The scheduler sets the index from the node name."
+        explanation: "The scheduler does not set it."
+      - id: d
+        text: "The kubelet reads the index from a ConfigMap named `index`."
+        explanation: "No such ConfigMap exists."
+    correct_option: a
+    explanation: "Indexes run from 0 to 4, and each index must succeed once."
+
+  - id: ats027-final-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Set a time zone for a CronJob"
+    source_readings:
+      - sections/section-020/module-05/course-02-cronjob-schedules-and-history-policies.md
+    prompt: "The CronJob `report` must run at 06:00 in `Europe/Copenhagen`. Which field sets that?"
+    options:
+      - id: a
+        text: "`spec.schedule: \"CRON_TZ=Europe/Copenhagen 0 6 * * *\"`"
+        explanation: "Do not put a zone in the schedule. The field `timeZone` is used."
+      - id: b
+        text: "`spec.jobTemplate.spec.timeZone`"
+        explanation: "That field is not on the Job template."
+      - id: c
+        text: "`spec.timeZone: \"Europe/Copenhagen\"`"
+        explanation: "Correct. Without it, the controller uses the time zone of kube-controller-manager."
+      - id: d
+        text: "`metadata.annotations.timezone`"
+        explanation: "An annotation has no effect."
+    correct_option: c
+    explanation: "Without it, the controller uses the time zone of kube-controller-manager."
+
+  - id: ats027-final-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe the default pod management of a StatefulSet"
+    source_readings:
+      - sections/section-020/module-04/course-02-volume-claim-templates-and-ordered-updates.md
+    prompt: "The StatefulSet `db` has three replicas and default settings. How does the controller create the Pods?"
+    options:
+      - id: a
+        text: "All three at once, because they use one template."
+        explanation: "That is `podManagementPolicy: Parallel`."
+      - id: b
+        text: "In random order, and the ordinals are assigned later."
+        explanation: "Ordinals are fixed."
+      - id: c
+        text: "In order `db-0`, `db-1`, `db-2`, and each Pod must be Running and Ready before the next starts."
+        explanation: "Correct. This is `OrderedReady`, the default."
+      - id: d
+        text: "In reverse order, from `db-2` to `db-0`."
+        explanation: "Reverse order is used for scale down."
+    correct_option: c
+    explanation: "This is `OrderedReady`, the default."
+
+  - id: ats027-final-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Make several template edits with one rollout"
+    source_readings:
+      - sections/section-020/module-03/course-01-rolling-updates-and-rollout-control.md
+    prompt: "You must change the image and the resource limits of the Deployment `scout` and start only one rollout. Which sequence does that?"
+    options:
+      - id: a
+        text: "`kubectl rollout pause`, make both edits, and `kubectl rollout resume`."
+        explanation: "Correct. While paused, template changes do not start a rollout, and resume rolls them out together."
+      - id: b
+        text: "`kubectl scale --replicas=0`, edit, and scale back."
+        explanation: "This causes downtime."
+      - id: c
+        text: "Make both edits at once, because each change always joins the rollout in progress."
+        explanation: "Each template change can create a new revision."
+      - id: d
+        text: "`kubectl rollout undo`, then edit."
+        explanation: "`undo` goes back and does not combine edits."
+    correct_option: a
+    explanation: "While paused, template changes do not start a rollout, and resume rolls them out together."
+
+  - id: ats027-final-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Stop a failing Job after a number of retries"
+    source_readings:
+      - sections/section-020/module-05/course-01-completions-parallelism-and-failure-limits.md
+    prompt: "A Job for `probe` fails every time. You want it marked failed after 3 retries. Which field is used?"
+    options:
+      - id: a
+        text: "`ttlSecondsAfterFinished: 3`"
+        explanation: "This deletes finished Jobs."
+      - id: b
+        text: "`completions: 3`"
+        explanation: "This is the number of successes."
+      - id: c
+        text: "`backoffLimit: 3`"
+        explanation: "Correct. After that many retries the Job becomes `Failed` with the reason `BackoffLimitExceeded`."
+      - id: d
+        text: "`parallelism: 3`"
+        explanation: "This sets concurrency."
+    correct_option: c
+    explanation: "After that many retries the Job becomes `Failed` with the reason `BackoffLimitExceeded`."
+
+  - id: ats027-final-q12
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know how many finished Jobs a CronJob keeps by default"
+    source_readings:
+      - sections/section-020/module-05/course-02-cronjob-schedules-and-history-policies.md
+    prompt: "The CronJob `report` sets no history limits. How many finished Jobs does it keep by default?"
+    options:
+      - id: a
+        text: "3 successful and 1 failed"
+        explanation: "Correct. The defaults are `successfulJobsHistoryLimit: 3` and `failedJobsHistoryLimit: 1`."
+      - id: b
+        text: "None, because it deletes every finished Job."
+        explanation: "Defaults keep some history."
+      - id: c
+        text: "All of them, because the default is unlimited."
+        explanation: "The defaults are limits."
+      - id: d
+        text: "1 successful and 3 failed"
+        explanation: "That reverses the defaults."
+    correct_option: a
+    explanation: "The defaults are `successfulJobsHistoryLimit: 3` and `failedJobsHistoryLimit: 1`."
+
+  - id: ats027-final-q13
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know which fields an init container does not support"
+    source_readings:
+      - sections/section-030/module-01/course-01-init-containers-and-sidecar-patterns.md
+    prompt: "A regular init container in the `scout` Pod sets a `readinessProbe`. What happens?"
+    options:
+      - id: a
+        text: "The API server rejects it, because init containers do not support probes."
+        explanation: "Correct. Regular init containers support the container fields except `lifecycle`, `livenessProbe`, `readinessProbe` and `startupProbe`."
+      - id: b
+        text: "The probe runs, and the Pod becomes ready after it passes."
+        explanation: "The field is rejected."
+      - id: c
+        text: "The kubelet ignores the probe."
+        explanation: "The API server validates it first."
+      - id: d
+        text: "The probe runs only after the application starts."
+        explanation: "Init containers finish before that."
+    correct_option: a
+    explanation: "Regular init containers support the container fields except `lifecycle`, `livenessProbe`, `readinessProbe` and `startupProbe`."
+
+  - id: ats027-final-q14
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain why an ambassador on localhost is not reachable from another Pod"
+    source_readings:
+      - sections/section-030/module-02/course-01-ambassador-proxy-over-localhost.md
+    prompt: "The ambassador in the `scout` Pod listens on `127.0.0.1:9000`. The `shuttle` Pod sends a request to the `scout` Pod IP on port 9000. What happens?"
+    options:
+      - id: a
+        text: "The request works, because all Pods in a namespace share localhost."
+        explanation: "Each Pod has its own network namespace."
+      - id: b
+        text: "The request is forwarded to `127.0.0.1` by the kubelet."
+        explanation: "The kubelet does not forward it."
+      - id: c
+        text: "The connection is refused, because the ambassador listens only on the loopback address inside the `scout` Pod."
+        explanation: "Correct. Only containers in the same Pod can reach `127.0.0.1` of that Pod."
+      - id: d
+        text: "The request goes to the API server."
+        explanation: "It does not."
+    correct_option: c
+    explanation: "Only containers in the same Pod can reach `127.0.0.1` of that Pod."
+
+  - id: ats027-final-q15
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain why sidecar containers share a node"
+    source_readings:
+      - sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
+    prompt: "Why can the containers of one Pod share an `emptyDir` volume and `localhost`?"
+    options:
+      - id: a
+        text: "The kubelet copies data between nodes."
+        explanation: "It does not copy between containers."
+      - id: b
+        text: "The scheduler places each container on a different node."
+        explanation: "The scheduler places Pods."
+      - id: c
+        text: "Each container has its own Pod IP."
+        explanation: "All containers share one Pod IP."
+      - id: d
+        text: "The scheduler places a Pod on one node, and its containers share the network namespace and mounted volumes."
+        explanation: "Correct. The Pod is the unit of scheduling."
+    correct_option: d
+    explanation: "The Pod is the unit of scheduling."
+
+  - id: ats027-final-q16
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Order a native sidecar before an init container that depends on it"
+    source_readings:
+      - sections/section-030/module-03/course-01-restartable-init-containers.md
+    prompt: "The init container `migrate` in the `outpost` Pod must reach a database through a proxy container. Which design is correct?"
+    options:
+      - id: a
+        text: "List `migrate` first and the proxy under `containers`."
+        explanation: "The proxy would not exist yet while `migrate` runs."
+      - id: b
+        text: "Put both under `containers` and rely on retries."
+        explanation: "They start without order."
+      - id: c
+        text: "Declare the proxy in `initContainers` with `restartPolicy: Always`, listed before `migrate`."
+        explanation: "Correct. The kubelet starts the sidecar first and keeps it running while `migrate` runs."
+      - id: d
+        text: "Declare `migrate` with `restartPolicy: Always`."
+        explanation: "That makes it a sidecar that never finishes."
+    correct_option: c
+    explanation: "The kubelet starts the sidecar first and keeps it running while `migrate` runs."
+
+  - id: ats027-final-q17
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Share a process namespace between containers"
+    source_readings:
+      - sections/section-030/module-02/course-02-adapter-output-translation.md
+    prompt: "A debugging container in the `probe` Pod must see the processes of the application container. Which Pod field allows it?"
+    options:
+      - id: a
+        text: "`hostPID: true`"
+        explanation: "This shows node processes."
+      - id: b
+        text: "`shareProcessNamespace: true`"
+        explanation: "Correct. The containers then share one process namespace."
+      - id: c
+        text: "`hostIPC: true`"
+        explanation: "This shares inter-process communication, not the list of processes."
+      - id: d
+        text: "`dnsPolicy: ClusterFirst`"
+        explanation: "This sets DNS."
+    correct_option: b
+    explanation: "The containers then share one process namespace."
+
+  - id: ats027-final-q18
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read the Pod status during an init container"
+    source_readings:
+      - sections/section-030/module-01/course-01-init-containers-and-sidecar-patterns.md
+    prompt: "The Pod `shuttle` has one init container that is still running. What does `kubectl get pod` show in the STATUS column?"
+    options:
+      - id: a
+        text: "`Init:0/1`"
+        explanation: "Correct. The first number is the completed init containers and the second is the total."
+      - id: b
+        text: "`Running`"
+        explanation: "The Pod is not running its application yet."
+      - id: c
+        text: "`Completed`"
+        explanation: "This shows for finished Pods."
+      - id: d
+        text: "`Pending:1/1`"
+        explanation: "That is not a valid status."
+    correct_option: a
+    explanation: "The first number is the completed init containers and the second is the total."
+
+  - id: ats027-final-q19
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain a ReadWriteOnce claim used by Pods on different nodes"
+    source_readings:
+      - sections/section-040/module-02/course-01-access-modes-and-data-presentation.md
+    prompt: "A Deployment in `starfleet` has three replicas that all mount one `ReadWriteOnce` claim. The Pods land on three nodes. What happens?"
+    options:
+      - id: a
+        text: "All three mount it, and writes are merged."
+        explanation: "`ReadWriteOnce` allows one node."
+      - id: b
+        text: "The Pods on the second and third node cannot attach the volume and wait, because the volume is mounted on one node."
+        explanation: "Correct. `ReadWriteOnce` limits mounts to a single node."
+      - id: c
+        text: "The API server rejects the Deployment."
+        explanation: "It does not check access modes at admission."
+      - id: d
+        text: "The kubelet creates a copy of the volume per node."
+        explanation: "It does not copy volumes."
+    correct_option: b
+    explanation: "`ReadWriteOnce` limits mounts to a single node."
+
+  - id: ats027-final-q20
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Know the default reclaim policy of a dynamically provisioned volume"
+    source_readings:
+      - sections/section-040/module-02/course-02-reclaim-policies-and-recovery.md
+    prompt: "A claim in `outpost` used a StorageClass that sets no `reclaimPolicy`. The claim is deleted. What happens to the volume?"
+    options:
+      - id: a
+        text: "It stays and is `Released`."
+        explanation: "That is `Retain`."
+      - id: b
+        text: "It is deleted with the claim, because the default is `Delete`."
+        explanation: "Correct. The default reclaim policy for a StorageClass is `Delete`."
+      - id: c
+        text: "It is moved to another namespace."
+        explanation: "Volumes are not moved."
+      - id: d
+        text: "It is set to `ReadOnlyMany`."
+        explanation: "Modes are not changed."
+    correct_option: b
+    explanation: "The default reclaim policy for a StorageClass is `Delete`."
+
+  - id: ats027-final-q21
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "State where Secret volume data is stored on the node"
+    source_readings:
+      - sections/section-040/module-04/course-01-configmap-and-secret-volumes.md
+    prompt: "The Secret `tls` is mounted as a volume in `scout`. Where does the kubelet keep the files on the node?"
+    options:
+      - id: a
+        text: "On the node disk, under the root file system."
+        explanation: "Secret volumes avoid disk."
+      - id: b
+        text: "In `etcd` on the node only."
+        explanation: "The kubelet does not read `etcd`."
+      - id: c
+        text: "In the container image."
+        explanation: "The image is not changed."
+      - id: d
+        text: "In a `tmpfs` memory file system, so the files are not written to disk."
+        explanation: "Correct. Secret volumes are backed by `tmpfs`."
+    correct_option: d
+    explanation: "Secret volumes are backed by `tmpfs`."
+
+  - id: ats027-final-q22
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Expose a container resource limit as an environment variable"
+    source_readings:
+      - sections/section-040/module-04/course-02-projected-and-downward-api-volumes.md
+    prompt: "The `probe` container must read its own memory limit in an environment variable. Which source does it use?"
+    options:
+      - id: a
+        text: "`valueFrom.resourceFieldRef` with `resource: limits.memory`"
+        explanation: "Correct. The downward API passes container resource fields."
+      - id: b
+        text: "`valueFrom.configMapKeyRef` named `memory`"
+        explanation: "That reads a ConfigMap."
+      - id: c
+        text: "`valueFrom.fieldRef` with `fieldPath: spec.nodeName`"
+        explanation: "That gives the node name."
+      - id: d
+        text: "`envFrom.secretRef`"
+        explanation: "That reads a Secret."
+    correct_option: a
+    explanation: "The downward API passes container resource fields."
+
+  - id: ats027-final-q23
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Grow a claim with volume expansion"
+    source_readings:
+      - sections/section-040/module-01/course-02-provisioning-classes-and-drivers.md
+    prompt: "The claim `data` in `starfleet` is 5Gi and must become 10Gi. Which setting must the StorageClass have?"
+    options:
+      - id: a
+        text: "`volumeBindingMode: Immediate`"
+        explanation: "This sets binding, not size."
+      - id: b
+        text: "`reclaimPolicy: Retain`"
+        explanation: "This sets what happens at delete."
+      - id: c
+        text: "`allowVolumeExpansion: true`"
+        explanation: "Correct. With it, you can raise `spec.resources.requests.storage` of the claim."
+      - id: d
+        text: "`provisioner: none`"
+        explanation: "This is not a valid way to resize."
+    correct_option: c
+    explanation: "With it, you can raise `spec.resources.requests.storage` of the claim."
+
+  - id: ats027-final-q24
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Project a service account token with an audience"
+    source_readings:
+      - sections/section-040/module-04/course-02-projected-and-downward-api-volumes.md
+    prompt: "The `scout` container needs a service account token for the audience `vault` that expires in one hour. Which volume does this?"
+    options:
+      - id: a
+        text: "A `secret` volume of the default token Secret."
+        explanation: "It has no audience setting."
+      - id: b
+        text: "A `configMap` volume with a `token` key."
+        explanation: "A ConfigMap does not issue tokens."
+      - id: c
+        text: "A `downwardAPI` volume with `serviceAccountName`."
+        explanation: "It exposes a name, not a token."
+      - id: d
+        text: "A `projected` volume with a `serviceAccountToken` source that sets `audience` and `expirationSeconds`."
+        explanation: "Correct. The kubelet requests the token and refreshes it before it expires."
+    correct_option: d
+    explanation: "The kubelet requests the token and refreshes it before it expires."
+

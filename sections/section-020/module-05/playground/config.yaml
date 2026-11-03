@@ -1,0 +1,22 @@
+# Job parallelism, completion modes and CronJob policies (PLAYGROUND). UNTESTED: written statically, never run.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-027-playground-020-05
+  docs:
+    guide: docs/overview.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    preloadImages:
+    - docker.io/library/busybox:1.37.0
+bootstrap:
+  manifests:
+  - name: fixture
+    type: file
+    source: manifests/fixture.yaml
+  waitFor:
+  - resource: deploy/scout
+    namespace: starfleet
+teardown:
+  keepCluster: false

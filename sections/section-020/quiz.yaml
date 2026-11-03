@@ -1,0 +1,289 @@
+# Knowledge check for section-020.
+schema_version: 1
+kind: question_bank
+id: ats027-020
+course_id: ATS027
+exam_code: CKAD
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: "section"
+  id: "section-020"
+  title: "Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)"
+questions:
+  - id: ats027-020-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Choose a DaemonSet for a workload that must run on every node"
+    source_readings:
+      - sections/section-020/module-01/course-02-choosing-deployments-daemonsets-and-statefulsets.md
+    prompt: "The `scout-logger` agent must run exactly one Pod on every node, including nodes that join the cluster later. Which resource fits?"
+    options:
+      - id: a
+        text: "A Deployment with `replicas` equal to the current node count."
+        explanation: "The count would not follow new nodes, and the scheduler may place two Pods on one node."
+      - id: b
+        text: "A CronJob with a schedule of every minute."
+        explanation: "A CronJob runs finished tasks, not a long-running agent."
+      - id: c
+        text: "A DaemonSet."
+        explanation: "Correct. The DaemonSet controller creates one Pod per matching node and adds a Pod when a node joins."
+      - id: d
+        text: "A StatefulSet with one replica per node name."
+        explanation: "A StatefulSet does not follow nodes."
+    correct_option: c
+    explanation: "The DaemonSet controller creates one Pod per matching node and adds a Pod when a node joins."
+
+  - id: ats027-020-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose a StatefulSet when each replica needs a stable identity and its own storage"
+    source_readings:
+      - sections/section-020/module-01/course-02-choosing-deployments-daemonsets-and-statefulsets.md
+    prompt: "A database in `outpost` runs three replicas. Each replica must keep its own name and its own disk after a restart. Which resource is correct?"
+    options:
+      - id: a
+        text: "A Deployment with a shared PersistentVolumeClaim."
+        explanation: "Deployment Pods get random names, and they all share one claim."
+      - id: b
+        text: "A DaemonSet with a `hostPath` volume."
+        explanation: "A DaemonSet is tied to nodes, not to numbered replicas."
+      - id: c
+        text: "A Job with `completions: 3`."
+        explanation: "A Job runs to completion and does not keep replicas running."
+      - id: d
+        text: "A StatefulSet with `volumeClaimTemplates`."
+        explanation: "Correct. A StatefulSet gives Pods stable ordinal names such as `db-0`, and each Pod gets its own claim from the template."
+    correct_option: d
+    explanation: "A StatefulSet gives Pods stable ordinal names such as `db-0`, and each Pod gets its own claim from the template."
+
+  - id: ats027-020-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Set a valid restartPolicy in a Job Pod template"
+    source_readings:
+      - sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
+    prompt: "You write a Job for `probe` whose Pod template sets `restartPolicy: Always`. What happens when you apply it?"
+    options:
+      - id: a
+        text: "The API server rejects it, because a Job Pod must use `Never` or `OnFailure`."
+        explanation: "Correct. A Job must finish, so `Always` is not valid in its Pod template."
+      - id: b
+        text: "The Job runs and the kubelet restarts each Pod after it succeeds."
+        explanation: "The API server validates the field before anything runs."
+      - id: c
+        text: "The Job runs, and the Job controller ignores the field."
+        explanation: "The API server rejects the object, so nothing runs."
+      - id: d
+        text: "The API server changes the value to `OnFailure` before saving."
+        explanation: "The API server does not change the value."
+    correct_option: a
+    explanation: "A Job must finish, so `Always` is not valid in its Pod template."
+
+  - id: ats027-020-q04
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read a CronJob schedule expression"
+    source_readings:
+      - sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
+    prompt: "A CronJob in `starfleet` has the schedule `30 2 * * 0`. When does it create a Job?"
+    options:
+      - id: a
+        text: "Every 30 minutes on the second day of the week."
+        explanation: "The first field is the minute and the second is the hour."
+      - id: b
+        text: "At 02:30 every Sunday."
+        explanation: "Correct. The fields are minute, hour, day of month, month and day of week, and `0` is Sunday."
+      - id: c
+        text: "At 02:30 on day 0 of every month."
+        explanation: "The fifth field is the day of week, not the month day."
+      - id: d
+        text: "At 00:00 every 2 hours and 30 minutes."
+        explanation: "The schedule has no step values."
+    correct_option: b
+    explanation: "The fields are minute, hour, day of month, month and day of week, and `0` is Sunday."
+
+  - id: ats027-020-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Calculate Pod counts during a rolling update from maxSurge and maxUnavailable"
+    source_readings:
+      - sections/section-020/module-03/course-01-rolling-updates-and-rollout-control.md
+    prompt: "The Deployment `scout` has `replicas: 4`, `maxSurge: 1` and `maxUnavailable: 0`. What does the Deployment controller guarantee during a rolling update?"
+    options:
+      - id: a
+        text: "Up to 5 Pods may exist, and at least 4 Pods stay available."
+        explanation: "Correct. One extra Pod is allowed, and no available Pod may be removed before its replacement is ready."
+      - id: b
+        text: "At most 4 Pods exist, and 1 Pod may be unavailable."
+        explanation: "This describes `maxSurge: 0` and `maxUnavailable: 1`."
+      - id: c
+        text: "All 4 old Pods stop first, and then 4 new Pods start."
+        explanation: "That is the `Recreate` strategy."
+      - id: d
+        text: "Up to 8 Pods run, and 0 old Pods stay."
+        explanation: "`maxSurge: 1` allows only one extra Pod."
+    correct_option: a
+    explanation: "One extra Pod is allowed, and no available Pod may be removed before its replacement is ready."
+
+  - id: ats027-020-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose the Recreate strategy when two versions must not run together"
+    source_readings:
+      - sections/section-020/module-03/course-01-rolling-updates-and-rollout-control.md
+    prompt: "The `shuttle` Deployment upgrade changes a database schema, and the old and the new version must never run at the same time. Short downtime is acceptable. Which setting is right?"
+    options:
+      - id: a
+        text: "`strategy.type: RollingUpdate` with `maxSurge: 100%`."
+        explanation: "Old and new Pods would run together."
+      - id: b
+        text: "`kubectl rollout pause` before the update."
+        explanation: "Pausing stops the rollout from progressing. It does not stop mixing."
+      - id: c
+        text: "`strategy.type: Recreate`."
+        explanation: "Correct. The controller terminates all old Pods before it creates new ones, so versions never overlap."
+      - id: d
+        text: "`minReadySeconds: 0`."
+        explanation: "This only sets how long a new Pod must be ready."
+    correct_option: c
+    explanation: "The controller terminates all old Pods before it creates new ones, so versions never overlap."
+
+  - id: ats027-020-q07
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Roll back a Deployment to an earlier revision"
+    source_readings:
+      - sections/section-020/module-03/course-02-scaling-and-rollback.md
+    prompt: "A new image of `scout` in `starfleet` is broken. Which command returns the Deployment to its previous revision?"
+    options:
+      - id: a
+        text: "`kubectl rollout restart deployment/scout -n starfleet`"
+        explanation: "This restarts Pods from the same broken template."
+      - id: b
+        text: "`kubectl rollout pause deployment/scout -n starfleet`"
+        explanation: "Pausing keeps the current template and stops further rollout."
+      - id: c
+        text: "`kubectl scale deployment/scout --replicas=0 -n starfleet`"
+        explanation: "This stops all Pods and does not restore the old version."
+      - id: d
+        text: "`kubectl rollout undo deployment/scout -n starfleet`"
+        explanation: "Correct. The command restores the Pod template of the previous revision, and a new rollout then starts."
+    correct_option: d
+    explanation: "The command restores the Pod template of the previous revision, and a new rollout then starts."
+
+  - id: ats027-020-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Give each StatefulSet Pod a stable DNS name with a headless Service"
+    source_readings:
+      - sections/section-020/module-04/course-01-stable-names-and-headless-services.md
+    prompt: "The StatefulSet `db` in `outpost` must give Pods DNS names such as `db-0.db.outpost.svc.cluster.local`. Which Service does this?"
+    options:
+      - id: a
+        text: "A `ClusterIP` Service with `sessionAffinity: ClientIP`."
+        explanation: "A normal `ClusterIP` Service has one virtual address and no per-Pod records."
+      - id: b
+        text: "A headless Service named `db` with `clusterIP: None`, set as `serviceName` of the StatefulSet."
+        explanation: "Correct. A headless Service has no virtual IP, so DNS returns records for each Pod, and the StatefulSet names them by ordinal."
+      - id: c
+        text: "A `NodePort` Service named `db`."
+        explanation: "A `NodePort` Service exposes a node port, not per-Pod names."
+      - id: d
+        text: "An `ExternalName` Service pointing at `db-0`."
+        explanation: "`ExternalName` returns one CNAME and does not create per-Pod names."
+    correct_option: b
+    explanation: "A headless Service has no virtual IP, so DNS returns records for each Pod, and the StatefulSet names them by ordinal."
+
+  - id: ats027-020-q09
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Predict what happens to claims when a StatefulSet scales down"
+    source_readings:
+      - sections/section-020/module-04/course-02-volume-claim-templates-and-ordered-updates.md
+    prompt: "The StatefulSet `db` has `volumeClaimTemplates` named `data` and runs three replicas. You scale it to one replica and set no `persistentVolumeClaimRetentionPolicy`. What happens to `data-db-1` and `data-db-2`?"
+    options:
+      - id: a
+        text: "The controller deletes them together with the Pods."
+        explanation: "Deletion happens only when the retention policy says `Delete`."
+      - id: b
+        text: "The controller moves their data into `data-db-0`."
+        explanation: "Claims are not merged."
+      - id: c
+        text: "They stay in the namespace and keep their data. Scaling up reuses them."
+        explanation: "Correct. The default retention policy is `Retain` for scale down and for delete."
+      - id: d
+        text: "They change to `ReadOnlyMany` and wait."
+        explanation: "Access modes of a claim do not change on scale."
+    correct_option: c
+    explanation: "The default retention policy is `Retain` for scale down and for delete."
+
+  - id: ats027-020-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Configure Job completions and parallelism"
+    source_readings:
+      - sections/section-020/module-05/course-01-completions-parallelism-and-failure-limits.md
+    prompt: "A Job for `scout` sets `completions: 6` and `parallelism: 2`. How does the Job controller run it?"
+    options:
+      - id: a
+        text: "Six Pods at once, and two of them must succeed."
+        explanation: "`parallelism` limits the Pods that run at once."
+      - id: b
+        text: "Two Pods in total, each of them run three times."
+        explanation: "Each completion is a separately successful Pod."
+      - id: c
+        text: "One Pod at a time until two Pods succeed."
+        explanation: "`parallelism: 2` allows two Pods at once, and six successes are needed."
+      - id: d
+        text: "Up to two Pods at once, until six Pods have succeeded."
+        explanation: "Correct. The Job is complete after six successful Pods."
+    correct_option: d
+    explanation: "The Job is complete after six successful Pods."
+
+  - id: ats027-020-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Bound the total run time of a Job"
+    source_readings:
+      - sections/section-020/module-05/course-01-completions-parallelism-and-failure-limits.md
+    prompt: "A Job for `probe` retries failed Pods. It must be stopped when it has run for 10 minutes in total, whatever the number of retries left. Which field does this?"
+    options:
+      - id: a
+        text: "`activeDeadlineSeconds: 600`"
+        explanation: "Correct. The Job controller terminates the running Pods and marks the Job failed with reason `DeadlineExceeded` when the time passes."
+      - id: b
+        text: "`backoffLimit: 600`"
+        explanation: "`backoffLimit` counts retries, not time."
+      - id: c
+        text: "`ttlSecondsAfterFinished: 600`"
+        explanation: "This deletes a finished Job after the time. It does not stop a running one."
+      - id: d
+        text: "`parallelism: 600`"
+        explanation: "`parallelism` sets how many Pods run at once."
+    correct_option: a
+    explanation: "The Job controller terminates the running Pods and marks the Job failed with reason `DeadlineExceeded` when the time passes."
+
+  - id: ats027-020-q12
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Prevent overlapping CronJob runs"
+    source_readings:
+      - sections/section-020/module-05/course-02-cronjob-schedules-and-history-policies.md
+    prompt: "The nightly CronJob `report` in `starfleet` sometimes runs longer than its schedule interval. A second copy must never run at the same time as the first. Which setting is right?"
+    options:
+      - id: a
+        text: "`concurrencyPolicy: Allow`"
+        explanation: "`Allow` starts new Jobs even when the last one still runs."
+      - id: b
+        text: "`concurrencyPolicy: Forbid`"
+        explanation: "Correct. The CronJob controller skips the new run while the previous Job is still active."
+      - id: c
+        text: "`successfulJobsHistoryLimit: 0`"
+        explanation: "The history limit controls finished Jobs kept, not overlap."
+      - id: d
+        text: "`startingDeadlineSeconds: 0`"
+        explanation: "This field limits how late a missed start may be."
+    correct_option: b
+    explanation: "The CronJob controller skips the new run while the previous Job is still active."
+

@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nightly-report
+  namespace: starfleet
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 10
+      initContainers:
+        - name: log-shipper
+          image: docker.io/library/busybox:1.37.0
+          restartPolicy: Always
+          command: ["sh", "-c"]
+          args:
+            - |
+              trap 'exit 0' TERM
+              tail -n +1 -F /logs/report.log | while IFS= read -r line; do
+                echo "shipped: $line"
+              done &
+              wait $!
+          volumeMounts:
+            - name: logs
+              mountPath: /logs
+              readOnly: true
+      containers:
+        - name: report
+          image: docker.io/library/busybox:1.37.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              for n in 1 2 3; do echo "reading $n" >> /logs/report.log; sleep 2; done
+              echo "report finished"
+          volumeMounts:
+            - name: logs
+              mountPath: /logs
+      volumes:
+        - name: logs
+          emptyDir: {}

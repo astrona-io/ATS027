@@ -1,0 +1,50 @@
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-027-lab-010-03-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    preloadImages:
+    - docker.io/library/busybox:1.37.0
+    - docker.io/library/python:3.13-alpine
+bootstrap:
+  init:
+  - name: seed-cluster
+    description: Create the namespaces and the shuttle client Pod
+    type: file
+    source: bootstrap/01-seed-cluster.sh
+testing:
+  init:
+  - name: apply-solution
+    description: Build and load the reference image and create the Pod
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: pod-runs-loaded-image
+    description: Pod site runs a locally loaded image and is Ready
+    type: file
+    source: validation/validate-pod-runs-loaded-image.sh
+    hint: Use container web, imagePullPolicy Never and an image name that starts with localhost/.
+  - name: serves-build-output
+    description: The Pod serves the page produced in the build stage on port 8080
+    type: file
+    source: validation/validate-serves-build-output.sh
+    hint: The page must contain generated-at-build. Run the render script in a build stage and copy only index.html into the final stage.
+  - name: no-build-only-files
+    description: The running container holds none of the build-only files
+    type: file
+    source: validation/validate-no-build-only-files.sh
+    hint: COPY --from copies named paths only. Do not copy catalog.txt, build-notes.txt or render.sh into the final stage.
+  - name: runs-as-non-root
+    description: The container process does not run as user 0
+    type: file
+    source: validation/validate-runs-as-non-root.sh
+    hint: Create a user in the final stage and select it with USER using a numeric ID.
+teardown:
+  keepCluster: false

@@ -1,0 +1,63 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Recover A Failed Deployment Rollout (LAB). UNTESTED: written statically, never run.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-027-lab-020-03-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    preloadImages:
+      - docker.io/library/busybox:1.37.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the probe Deployment and update it to a broken image
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+# Applied only by `astrona test`: the reference solution.
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the reference solution
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: image-restored
+      description: probe runs the working image and no Pod runs the broken one
+      type: file
+      source: validation/validate-image-restored.sh
+      hint: Roll the Deployment back with kubectl rollout undo, or set the image back to docker.io/library/busybox:1.37.0.
+    - name: rollout-complete
+      description: The rollout is complete and every replica is available
+      type: file
+      source: validation/validate-rollout-complete.sh
+      hint: Run kubectl rollout status and look at the Pods with kubectl get pods.
+    - name: strategy-set
+      description: RollingUpdate with maxUnavailable 0 and maxSurge 1
+      type: file
+      source: validation/validate-strategy.sh
+      hint: Patch spec.strategy. Both fields are integers under spec.strategy.rollingUpdate.
+    - name: scaled-to-four
+      description: probe has four replicas and four ready Pods
+      type: file
+      source: validation/validate-scaled.sh
+      hint: Use kubectl scale deployment/probe --replicas=4 and wait for the Pods to be ready.
+    - name: deployment-repaired-in-place
+      description: The original Deployment was repaired and not deleted
+      type: file
+      source: validation/validate-same-deployment.sh
+      hint: Do not delete the Deployment. Roll it back instead.
+
+teardown:
+  keepCluster: false

@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: probe-settings
+  namespace: starfleet
+data:
+  probe.conf: |
+    retention=7
+---
+# Faults: the claim asks for ReadWriteMany and only 100Mi, the claim is mounted
+# at /data (the app never writes there), the scratch emptyDir sits at the journal
+# path /var/lib/probe, and the settings file is a subPath mount.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: probe-data
+  namespace: starfleet
+spec:
+  accessModes: ["ReadWriteMany"]
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probe
+  namespace: starfleet
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: probe
+  template:
+    metadata:
+      labels:
+        app: probe
+    spec:
+      containers:
+        - name: app
+          image: docker.io/library/busybox:1.37.0
+          env:
+            - name: JOURNAL_DIR
+              value: /var/lib/probe
+            - name: SCRATCH_DIR
+              value: /scratch
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p "$JOURNAL_DIR" "$SCRATCH_DIR"
+              echo "$HOSTNAME" >> "$JOURNAL_DIR/journal"
+              echo working > "$SCRATCH_DIR/work-$HOSTNAME"
+              trap 'exit 1' TERM
+              while true; do sleep 1; done
+          resources:
+            limits:
+              memory: 64Mi
+          volumeMounts:
+            - name: scratch
+              mountPath: /var/lib/probe
+            - name: data
+              mountPath: /data
+            - name: settings
+              mountPath: /etc/probe/probe.conf
+              subPath: probe.conf
+      volumes:
+        - name: scratch
+          emptyDir: {}
+        - name: data
+          persistentVolumeClaim:
+            claimName: probe-data
+        - name: settings
+          configMap:
+            name: probe-settings

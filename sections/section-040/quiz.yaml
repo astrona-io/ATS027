@@ -1,0 +1,289 @@
+# Knowledge check for section-040.
+schema_version: 1
+kind: question_bank
+id: ats027-040
+course_id: ATS027
+exam_code: CKAD
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: "section"
+  id: "section-040"
+  title: "Utilize persistent and ephemeral volumes"
+questions:
+  - id: ats027-040-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Compare the life of emptyDir data with container and Pod lifecycles"
+    source_readings:
+      - sections/section-040/module-01/course-01-storage-lifecycles-and-claims.md
+    prompt: "A container in the `scout` Pod writes to an `emptyDir` volume and then crashes. The kubelet restarts the container. What happens to the data, and what happens when the Pod is deleted?"
+    options:
+      - id: a
+        text: "The data is kept after the restart and is removed when the Pod is deleted."
+        explanation: "Correct. The volume belongs to the Pod, not to the container."
+      - id: b
+        text: "The data is removed at the restart and also at Pod deletion."
+        explanation: "A container crash does not remove a Pod's volume."
+      - id: c
+        text: "The data is kept after both, because it is written to disk."
+        explanation: "The volume is deleted permanently with the Pod."
+      - id: d
+        text: "The data moves to a PersistentVolume when the Pod is deleted."
+        explanation: "Nothing moves data to a PersistentVolume."
+    correct_option: a
+    explanation: "The volume belongs to the Pod, not to the container."
+
+  - id: ats027-040-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain who creates the PersistentVolume for a claim with a StorageClass"
+    source_readings:
+      - sections/section-040/module-01/course-02-provisioning-classes-and-drivers.md
+    prompt: "A PersistentVolumeClaim in `starfleet` names the StorageClass `fast`, and no PersistentVolume exists. Which component creates the volume?"
+    options:
+      - id: a
+        text: "The scheduler, when it places the Pod."
+        explanation: "The scheduler does not create volumes."
+      - id: b
+        text: "The kubelet, when it mounts the path."
+        explanation: "The kubelet mounts volumes. It does not create them."
+      - id: c
+        text: "The provisioner of the class, usually a CSI driver, which makes a PersistentVolume and binds it."
+        explanation: "Correct. Dynamic provisioning is handled by the driver named in the StorageClass."
+      - id: d
+        text: "The API server, by copying the claim."
+        explanation: "The API server stores objects and does not provision storage."
+    correct_option: c
+    explanation: "Dynamic provisioning is handled by the driver named in the StorageClass."
+
+  - id: ats027-040-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Recognize WaitForFirstConsumer binding"
+    source_readings:
+      - sections/section-040/module-01/course-02-provisioning-classes-and-drivers.md
+    prompt: "A PersistentVolumeClaim `data` is `Pending`. Its StorageClass uses `volumeBindingMode: WaitForFirstConsumer`, and no Pod uses the claim yet. What is the cause?"
+    options:
+      - id: a
+        text: "The driver is broken and needs a restart."
+        explanation: "The claim waits by design here."
+      - id: b
+        text: "The claim cannot bind until a Pod that uses it is scheduled, so the volume is created for that Pod's node."
+        explanation: "Correct. Binding is delayed until the first consumer is scheduled."
+      - id: c
+        text: "The claim is too small for the class."
+        explanation: "The size is not the cause of this state."
+      - id: d
+        text: "The namespace has no ResourceQuota."
+        explanation: "A missing quota does not cause Pending."
+    correct_option: b
+    explanation: "Binding is delayed until the first consumer is scheduled."
+
+  - id: ats027-040-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose an access mode that allows one Pod only"
+    source_readings:
+      - sections/section-040/module-02/course-01-access-modes-and-data-presentation.md
+    prompt: "A claim for `outpost` must be mounted read-write by exactly one Pod in the whole cluster, even when two Pods run on the same node. Which access mode does that?"
+    options:
+      - id: a
+        text: "`ReadWriteOnce`"
+        explanation: "This allows several Pods on one node to mount it."
+      - id: b
+        text: "`ReadOnlyMany`"
+        explanation: "This mounts read-only on many nodes."
+      - id: c
+        text: "`ReadWriteMany`"
+        explanation: "This allows many nodes to write."
+      - id: d
+        text: "`ReadWriteOncePod`"
+        explanation: "Correct. It limits the volume to a single Pod."
+    correct_option: d
+    explanation: "It limits the volume to a single Pod."
+
+  - id: ats027-040-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Predict what a Retain reclaim policy does"
+    source_readings:
+      - sections/section-040/module-02/course-02-reclaim-policies-and-recovery.md
+    prompt: "A PersistentVolume has `persistentVolumeReclaimPolicy: Retain`. Its claim in `starfleet` is deleted. What is the state of the volume?"
+    options:
+      - id: a
+        text: "The volume and its data are deleted from the storage backend."
+        explanation: "That is the `Delete` policy."
+      - id: b
+        text: "The volume is `Released` and keeps its data. It is not bound to a new claim until an administrator clears the old reference."
+        explanation: "Correct. `Retain` keeps data for manual recovery."
+      - id: c
+        text: "The volume returns to `Available` at once for any claim."
+        explanation: "A `Released` volume is not reused automatically."
+      - id: d
+        text: "The volume is changed to `ReadOnlyMany`."
+        explanation: "Access modes do not change."
+    correct_option: b
+    explanation: "`Retain` keeps data for manual recovery."
+
+  - id: ats027-040-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Describe memory-backed emptyDir accounting"
+    source_readings:
+      - sections/section-040/module-03/course-01-emptydir-medium-and-size-limits.md
+    prompt: "A container in the `probe` Pod has a memory limit of 128Mi. It writes 200Mi to an `emptyDir` with `medium: Memory`. What is the concern?"
+    options:
+      - id: a
+        text: "The files count against the container memory limit, so the container can be killed for running out of memory."
+        explanation: "Correct. A memory-backed volume uses tmpfs, and the written files use the memory of the container that wrote them."
+      - id: b
+        text: "The files use the node disk, so the limit does not matter."
+        explanation: "`medium: Memory` uses RAM, not disk."
+      - id: c
+        text: "The write is slower because it goes through the network."
+        explanation: "It does not use the network."
+      - id: d
+        text: "The files stay after the Pod is deleted."
+        explanation: "The data is deleted with the Pod."
+    correct_option: a
+    explanation: "A memory-backed volume uses tmpfs, and the written files use the memory of the container that wrote them."
+
+  - id: ats027-040-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Limit disk usage of an emptyDir volume"
+    source_readings:
+      - sections/section-040/module-03/course-01-emptydir-medium-and-size-limits.md
+    prompt: "A scratch `emptyDir` volume in `shuttle` has `sizeLimit: 1Gi`, and the container writes more than 1Gi to it. What does the kubelet do?"
+    options:
+      - id: a
+        text: "It grows the volume to fit the data."
+        explanation: "The limit is not changed by the kubelet."
+      - id: b
+        text: "It silently drops the new writes."
+        explanation: "It does not drop writes quietly."
+      - id: c
+        text: "It evicts the Pod, because the volume went over its size limit."
+        explanation: "Correct. The kubelet checks the usage and evicts the Pod that exceeds it."
+      - id: d
+        text: "It moves the data to a PersistentVolume."
+        explanation: "It never moves volume data."
+    correct_option: c
+    explanation: "The kubelet checks the usage and evicts the Pod that exceeds it."
+
+  - id: ats027-040-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Create per-Pod storage with a generic ephemeral volume"
+    source_readings:
+      - sections/section-040/module-03/course-02-generic-ephemeral-volumes.md
+    prompt: "The `scout` Pod needs scratch storage of 5Gi from the StorageClass `fast`, which is deleted with the Pod. Which volume source fits?"
+    options:
+      - id: a
+        text: "`persistentVolumeClaim` that names a shared claim."
+        explanation: "A shared claim is not deleted with the Pod."
+      - id: b
+        text: "`hostPath` with the type `DirectoryOrCreate`."
+        explanation: "This uses a node path and not a class."
+      - id: c
+        text: "`emptyDir` with `storageClassName: fast`."
+        explanation: "`emptyDir` has no such field."
+      - id: d
+        text: "`ephemeral` with a `volumeClaimTemplate`."
+        explanation: "Correct. The control plane creates a claim owned by the Pod, and the claim is deleted when the Pod is deleted."
+    correct_option: d
+    explanation: "The control plane creates a claim owned by the Pod, and the claim is deleted when the Pod is deleted."
+
+  - id: ats027-040-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Know which ConfigMap mounts update"
+    source_readings:
+      - sections/section-040/module-04/course-01-configmap-and-secret-volumes.md
+    prompt: "The `scout` Pod mounts the ConfigMap `settings` as a volume. The team edits the ConfigMap. Which mount shows the new content without a Pod restart, after the kubelet sync delay?"
+    options:
+      - id: a
+        text: "A file mounted with `subPath`."
+        explanation: "A `subPath` mount does not receive updates."
+      - id: b
+        text: "The ConfigMap values used as environment variables."
+        explanation: "Environment variables are set at container start."
+      - id: c
+        text: "The whole ConfigMap volume mounted at a directory."
+        explanation: "Correct. The kubelet refreshes the files of a normal ConfigMap volume."
+      - id: d
+        text: "Both a directory mount and a `subPath` mount, at the same speed."
+        explanation: "A `subPath` mount does not update."
+    correct_option: c
+    explanation: "The kubelet refreshes the files of a normal ConfigMap volume."
+
+  - id: ats027-040-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Restrict Secret file permissions in a volume"
+    source_readings:
+      - sections/section-040/module-04/course-01-configmap-and-secret-volumes.md
+    prompt: "The Secret `tls` is mounted into `outpost`. The files must be readable only by their owner. Which setting does that?"
+    options:
+      - id: a
+        text: "`readOnly: true` on the volumeMount."
+        explanation: "That makes the mount read-only. It does not limit readers."
+      - id: b
+        text: "`type: Opaque` on the Secret."
+        explanation: "The type does not set file modes."
+      - id: c
+        text: "`optional: true` on the Secret volume."
+        explanation: "That allows a missing Secret."
+      - id: d
+        text: "`defaultMode: 0400` on the Secret volume source."
+        explanation: "Correct. The mode sets the permission bits of the files."
+    correct_option: d
+    explanation: "The mode sets the permission bits of the files."
+
+  - id: ats027-040-q11
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Combine several sources in one projected volume"
+    source_readings:
+      - sections/section-040/module-04/course-02-projected-and-downward-api-volumes.md
+    prompt: "A container needs a ConfigMap, a Secret and its own Pod labels under one directory, `/etc/probe`. Which volume type does this?"
+    options:
+      - id: a
+        text: "`projected`, with a source for each of them."
+        explanation: "Correct. A projected volume merges ConfigMap, Secret, downward API and service account token sources in one directory."
+      - id: b
+        text: "`emptyDir`, with files copied by the kubelet."
+        explanation: "The kubelet does not copy into `emptyDir`."
+      - id: c
+        text: "`configMap`, which can also list Secrets."
+        explanation: "A `configMap` volume has one ConfigMap."
+      - id: d
+        text: "`hostPath`, which reads the sources from the node."
+        explanation: "`hostPath` has no such sources."
+    correct_option: a
+    explanation: "A projected volume merges ConfigMap, Secret, downward API and service account token sources in one directory."
+
+  - id: ats027-040-q12
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Expose Pod labels to a container so that updates are visible"
+    source_readings:
+      - sections/section-040/module-04/course-02-projected-and-downward-api-volumes.md
+    prompt: "The `drifter` container must read its own Pod labels, and it must see a label change without a restart. What is the correct design?"
+    options:
+      - id: a
+        text: "An environment variable with `fieldRef: metadata.labels`."
+        explanation: "Environment variables are fixed at start."
+      - id: b
+        text: "A downward API volume with `fieldRef` `metadata.labels`."
+        explanation: "Correct. The kubelet updates labels in the volume file, so a running container can read the new value."
+      - id: c
+        text: "A ConfigMap that the team edits by hand."
+        explanation: "That does not read the Pod's own labels."
+      - id: d
+        text: "A `subPath` mount of the downward API file."
+        explanation: "A `subPath` mount of the downward API does not get updates."
+    correct_option: b
+    explanation: "The kubelet updates labels in the volume file, so a running container can read the new value."
+

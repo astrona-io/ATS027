@@ -205,7 +205,7 @@ The official objectives are listed in `astrona.yaml` and mapped in `CURRICULUM.m
 
 ### Playground and guided-practice scope
 
-On 2026-10-12 the maintainer requested CKAD playgrounds and hands-on teaching. This supersedes the earlier no-playgrounds instruction for CKAD. Add one ungraded environment per module and weave concrete practice into the reading order. Keep the existing YAML knowledge checks. No new graded labs or submission workflow are added in this scope.
+On 2026-10-12 the maintainer requested CKAD playgrounds and hands-on teaching. This supersedes the earlier no-playgrounds instruction for CKAD. Add one ungraded environment per module and weave concrete practice into the reading order. Keep the existing YAML knowledge checks. The 2026-10-13 maintainer request extends this scope to graded labs. Register each independent lab immediately after its teaching reading, with a task, solution, guarded bootstrap, reference repair and behavior grader. Keep technical pages draft until review.
 
 Playgrounds use the Astrona configuration contract, isolated kubeconfigs and bounded bootstrap waits. Do not write to unrelated clusters. Landing pages carry the playground launch marker, every practical reading renews it before the first step, and the final summary ends with the destroy marker. The shared writing and lifecycle guidance above applies to these environments.
 
@@ -247,3 +247,7 @@ Primary author sources are recorded in `SOURCES.md`. The objective list was
 verified on 2026-10-11. Detailed reading expansions were written on 2026-10-11.
 Validate manifest paths, summary ordering, curriculum coverage and question
 contracts. Record actual runtime evidence when available. Static validation is not live verification; do not invent command output.
+
+### Build status (2026-11-03)
+
+All four sections are built: every module has a landing page, parts, a `# Summary` page ending in the destroy marker, a playground and a graded lab (module labs `difficulty: intermediate`, one capstone per section `difficulty: advanced`). Each section has a `quiz.yaml` (`type: quiz`, `pass_score: 70`) and the course ends with `sections/final-domain-quiz.yaml`. The question banks are status `draft`. Every lab and playground is UNTESTED: only static checks were run (`astrona validate -c`, `bash -n`, YAML parsing). Do not run labs until the maintainer asks for it.

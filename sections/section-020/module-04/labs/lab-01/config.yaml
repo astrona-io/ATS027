@@ -1,0 +1,63 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Build A StatefulSet With Per-Pod Storage (LAB). UNTESTED: written statically, never run.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-027-lab-020-04-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    preloadImages:
+      - docker.io/library/busybox:1.37.0
+
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the namespaces and a normal Service named shuttle
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+# Applied only by `astrona test`: the reference solution.
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the reference solution
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: statefulset-pods
+      description: StatefulSet shuttle runs three ready Pods with ordinal names
+      type: file
+      source: validation/validate-statefulset.sh
+      hint: Create a StatefulSet with replicas 3 and serviceName shuttle. The Pods are named shuttle-0 to shuttle-2.
+    - name: headless-service
+      description: Service shuttle is headless and selects the Pods
+      type: file
+      source: validation/validate-headless-service.sh
+      hint: The clusterIP of an existing Service cannot be changed. Delete the normal Service and create it again with clusterIP None.
+    - name: pod-dns
+      description: The DNS name of one Pod resolves to its IP address
+      type: file
+      source: validation/validate-pod-dns.sh
+      hint: The name is pod.service.namespace.svc.cluster.local. The Service selector must match the Pod labels.
+    - name: storage-and-data
+      description: Each Pod has a bound claim and data survives Pod deletion
+      type: file
+      source: validation/validate-storage-and-data.sh
+      hint: Add volumeClaimTemplates named data and mount it at /data.
+    - name: retention-policy
+      description: Claims are deleted on scale down and kept on StatefulSet deletion
+      type: file
+      source: validation/validate-retention-policy.sh
+      hint: Set persistentVolumeClaimRetentionPolicy with whenScaled Delete and whenDeleted Retain.
+
+teardown:
+  keepCluster: false

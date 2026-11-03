@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: probe-data
+  namespace: starfleet
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probe
+  namespace: starfleet
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: probe
+  template:
+    metadata:
+      labels:
+        app: probe
+    spec:
+      containers:
+        - name: app
+          image: docker.io/library/busybox:1.37.0
+          env:
+            - name: JOURNAL_DIR
+              value: /var/lib/probe
+            - name: SCRATCH_DIR
+              value: /scratch
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p "$JOURNAL_DIR" "$SCRATCH_DIR"
+              echo "$HOSTNAME" >> "$JOURNAL_DIR/journal"
+              echo working > "$SCRATCH_DIR/work-$HOSTNAME"
+              trap 'exit 1' TERM
+              while true; do sleep 1; done
+          resources:
+            limits:
+              memory: 64Mi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/probe
+            - name: scratch
+              mountPath: /scratch
+            - name: config
+              mountPath: /etc/probe
+              readOnly: true
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: probe-data
+        - name: scratch
+          emptyDir:
+            sizeLimit: 128Mi
+        - name: config
+          projected:
+            sources:
+              - configMap:
+                  name: probe-settings
+                  items:
+                    - key: probe.conf
+                      path: probe.conf
+              - downwardAPI:
+                  items:
+                    - path: labels
+                      fieldRef:
+                        fieldPath: metadata.labels

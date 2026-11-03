@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: outpost
+---
+# scout: one container with three volumes. scratch is a disk-backed emptyDir,
+# cache is a memory-backed emptyDir with a size limit, work is a generic
+# ephemeral volume that the ephemeral-volume controller turns into a claim.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout
+  namespace: starfleet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout
+  template:
+    metadata:
+      labels:
+        app: scout
+    spec:
+      containers:
+        - name: app
+          image: docker.io/library/busybox:1.37.0
+          command:
+            - sh
+            - -c
+            - |
+              echo started >> /scratch/starts
+              trap 'exit 1' TERM
+              while true; do sleep 1; done
+          resources:
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: scratch
+              mountPath: /scratch
+            - name: cache
+              mountPath: /cache
+            - name: work
+              mountPath: /work
+      volumes:
+        - name: scratch
+          emptyDir:
+            sizeLimit: 100Mi
+        - name: cache
+          emptyDir:
+            medium: Memory
+            sizeLimit: 32Mi
+        - name: work
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: ["ReadWriteOnce"]
+                storageClassName: standard
+                resources:
+                  requests:
+                    storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drifter
+  namespace: outpost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: drifter
+  template:
+    metadata:
+      labels:
+        app: drifter
+    spec:
+      containers:
+        - name: app
+          image: docker.io/library/busybox:1.37.0
+          command: ["sh", "-c", "while true; do sleep 3600; done"]

@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: outpost
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout
+  namespace: starfleet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout
+  template:
+    metadata:
+      labels:
+        app: scout
+    spec:
+      containers:
+      - name: scout
+        image: docker.io/library/busybox:1.37.0
+        command: ["sh", "-c", "sleep 36000"]
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: outpost-sweep
+  namespace: outpost
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: sweep
+            image: docker.io/library/busybox:1.37.0
+            command: ["sh", "-c", "echo sweep done"]

@@ -1,0 +1,65 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Add Ephemeral Volumes To A Deployment (LAB) - UNTESTED, written statically.
+# Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-027-lab-040-03-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    preloadImages:
+      - docker.io/library/busybox:1.37.0
+
+# Starting state: the shuttle Deployment with no volumes.
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the shuttle Deployment without volumes
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+# Applied only by `astrona test`: the reference solution.
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the reference solution
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: memory-cache-volume
+      description: shuttle has a memory-backed emptyDir with a size limit at /cache
+      type: file
+      source: validation/validate-cache-volume.sh
+      hint: Use an emptyDir with medium Memory and sizeLimit 64Mi, named cache, mounted at /cache in container app.
+    - name: memory-limit
+      description: The container has a memory limit of at least 128Mi
+      type: file
+      source: validation/validate-memory-limit.sh
+      hint: Memory-backed files count against the container memory limit. Set resources.limits.memory to 128Mi.
+    - name: ephemeral-claim
+      description: A generic ephemeral volume creates a Bound claim owned by the Pod
+      type: file
+      source: validation/validate-ephemeral-claim.sh
+      hint: Add a volume named work with ephemeral.volumeClaimTemplate, class standard, ReadWriteOnce, 1Gi. Mount it at /work.
+    - name: restart-keeps-data
+      description: A container restart keeps the emptyDir data
+      type: file
+      source: validation/validate-container-restart-keeps-data.sh
+      hint: The marker files are written under /cache. Without the volume mount they live in the container layer and a restart removes them.
+    - name: replacement-loses-data
+      description: A replaced Pod starts with empty emptyDir data and a new claim
+      type: file
+      source: validation/validate-pod-replacement-loses-data.sh
+      hint: The Deployment must still run one healthy replica after the Pod is deleted. Check that the new Pod is Running.
+
+teardown:
+  keepCluster: false

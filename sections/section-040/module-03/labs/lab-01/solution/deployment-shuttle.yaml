@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shuttle
+  namespace: starfleet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shuttle
+  template:
+    metadata:
+      labels:
+        app: shuttle
+    spec:
+      containers:
+        - name: app
+          image: docker.io/library/busybox:1.37.0
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /cache /work
+              [ -f /cache/created ] || echo "$HOSTNAME" > /cache/created
+              echo started >> /cache/starts
+              [ -f /work/owner ] || echo "$HOSTNAME" > /work/owner
+              trap 'exit 1' TERM
+              while true; do sleep 1; done
+          resources:
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: cache
+              mountPath: /cache
+            - name: work
+              mountPath: /work
+      volumes:
+        - name: cache
+          emptyDir:
+            medium: Memory
+            sizeLimit: 64Mi
+        - name: work
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: ["ReadWriteOnce"]
+                storageClassName: standard
+                resources:
+                  requests:
+                    storage: 1Gi

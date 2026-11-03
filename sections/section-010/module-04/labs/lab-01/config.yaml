@@ -1,0 +1,54 @@
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-027-lab-010-04-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    preloadImages:
+    - docker.io/library/busybox:1.37.0
+bootstrap:
+  init:
+  - name: seed-cluster
+    description: Build and load the v1 image and create the probe Deployment
+    type: file
+    source: bootstrap/01-seed-cluster.sh
+testing:
+  init:
+  - name: apply-solution
+    description: Build and load v2 and update the Deployment
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: rollout-complete-on-v2
+    description: Deployment probe runs localhost/ckad-probe:v2 on every replica and is fully rolled out
+    type: file
+    source: validation/validate-rollout-complete-on-v2.sh
+    hint: Wait for the rollout to finish. All replicas must be updated, ready and available.
+  - name: updated-in-place
+    description: The original Deployment object was updated, not deleted and recreated
+    type: file
+    source: validation/validate-updated-in-place.sh
+    hint: Use kubectl set image or kubectl edit on the existing Deployment.
+  - name: args-override-keeps-entrypoint
+    description: The httpd process keeps the image entry point and listens on 9090
+    type: file
+    source: validation/validate-args-override.sh
+    hint: Set args to -p 9090 and do not set command, so the image ENTRYPOINT is kept.
+  - name: serves-v2-through-service
+    description: shuttle reaches v2 through the probe Service
+    type: file
+    source: validation/validate-serves-v2.sh
+    hint: The Service targets the named port http. Change the container port and the readiness probe to 9090 too.
+  - name: pull-policy-never
+    description: The container uses imagePullPolicy Never
+    type: file
+    source: validation/validate-pull-policy.sh
+    hint: The image exists only on the cluster node. Set imagePullPolicy to Never.
+teardown:
+  keepCluster: false

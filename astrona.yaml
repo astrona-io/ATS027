@@ -1,3 +1,4 @@
+---
 training:
   id: ATS027
   title: 'CKAD: Application Design and Build'
@@ -36,7 +37,7 @@ modules:
   title: Define, build and modify container images
   description: Developed explanations and application reasoning for Define, build
     and modify container images.
-  maturity: alpha
+  status: alpha
   content:
   - type: reading
     title: Define, build and modify container images
@@ -106,12 +107,123 @@ modules:
   - type: reading
     title: Summary
     path: sections/section-010/module-02/course-03-summary.md
+  - type: reading
+    title: Dockerfile Instructions, Layer Cache And Multi-Stage Builds
+    path: sections/section-010/module-03/course.md
+  - type: reading
+    title: Dockerfile Instructions And The Layer Cache
+    path: sections/section-010/module-03/course-01-dockerfile-instructions-and-the-layer-cache.md
+  - type: reading
+    title: Multi-Stage Builds And Small Images
+    path: sections/section-010/module-03/course-02-multi-stage-builds-and-small-images.md
+  - type: reading
+    title: Build A Multi-Stage Image And Run It — Task
+    path: sections/section-010/module-03/labs/lab-01/question.md
+  - type: lab
+    title: Build A Multi-Stage Image And Run It
+    path: sections/section-010/module-03/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: multi-stage-build
+    task_kind: build
+    learning_goals:
+    - Build a multi-stage image whose final stage holds only the build output and
+      runs as a non-root user.
+    - Load the image into a kind cluster and run it with imagePullPolicy Never.
+    tags:
+    - ckad
+    - image-build
+    - multi-stage
+    resources:
+    - name: Multi-stage builds
+      url: https://docs.docker.com/build/building/multi-stage/
+    - name: Dockerfile reference
+      url: https://docs.docker.com/reference/dockerfile/
+    - name: Images in Kubernetes
+      url: https://kubernetes.io/docs/concepts/containers/images/
+  - type: reading
+    title: Build A Multi-Stage Image And Run It — Solution
+    path: sections/section-010/module-03/labs/lab-01/solution.md
+  - type: reading
+    title: Summary
+    path: sections/section-010/module-03/course-03-summary.md
+  - type: reading
+    title: ENTRYPOINT, CMD And Modifying A Deployed Image
+    path: sections/section-010/module-04/course.md
+  - type: reading
+    title: ENTRYPOINT, CMD And Pod Command And Args
+    path: sections/section-010/module-04/course-01-entrypoint-cmd-and-pod-command-args.md
+  - type: reading
+    title: Tagging, Loading And Updating An Image
+    path: sections/section-010/module-04/course-02-tagging-loading-and-updating-an-image.md
+  - type: reading
+    title: Update A Deployment To A Derived Image With Overridden Arguments — Task
+    path: sections/section-010/module-04/labs/lab-01/question.md
+  - type: lab
+    title: Update A Deployment To A Derived Image With Overridden Arguments
+    path: sections/section-010/module-04/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: image-update
+    task_kind: build
+    learning_goals:
+    - Derive a new image version from an existing image and load it into a cluster.
+    - Update a Deployment to the new image with an args override and verify the rollout.
+    tags:
+    - ckad
+    - image-update
+    - entrypoint-cmd
+    resources:
+    - name: Define a command and arguments for a container
+      url: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
+    - name: Updating a Deployment
+      url: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment
+    - name: Images in Kubernetes
+      url: https://kubernetes.io/docs/concepts/containers/images/
+  - type: reading
+    title: Update A Deployment To A Derived Image With Overridden Arguments — Solution
+    path: sections/section-010/module-04/labs/lab-01/solution.md
+  - type: reading
+    title: Summary
+    path: sections/section-010/module-04/course-03-summary.md
+  - type: reading
+    title: Define, Build And Modify Container Images Capstone — Task
+    path: sections/section-010/capstone/labs/lab-01/question.md
+  - type: lab
+    title: Define, Build And Modify Container Images Capstone
+    path: sections/section-010/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 60m
+    topic: image-build-and-update
+    task_kind: build
+    learning_goals:
+    - Build a multi-stage non-root image, roll it out, derive a second version and
+      update with an args override.
+    - Record the image ID of the running Pods.
+    tags:
+    - ckad
+    - capstone
+    - image-build
+    resources:
+    - name: Multi-stage builds
+      url: https://docs.docker.com/build/building/multi-stage/
+    - name: Define a command and arguments for a container
+      url: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
+    - name: Deployments
+      url: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+  - type: reading
+    title: Define, Build And Modify Container Images Capstone — Solution
+    path: sections/section-010/capstone/labs/lab-01/solution.md
+  - type: quiz
+    title: 'Knowledge Check: Define, build and modify container images'
+    path: sections/section-010/quiz.yaml
+    pass_score: 70
 - id: module-020
   title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob,
     etc.)
   description: Developed explanations and application reasoning for Choose and use
     the right workload resource (Deployment, DaemonSet, CronJob, etc.).
-  maturity: alpha
+  status: alpha
   content:
   - type: reading
     title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob,
@@ -162,7 +274,7 @@ modules:
   - type: lab
     title: Create And Complete A Job
     path: sections/section-020/module-02/labs/lab-01
-    difficulty: beginner
+    difficulty: intermediate
     estimated_duration: 15m
     topic: job
     task_kind: build
@@ -199,11 +311,151 @@ modules:
   - type: reading
     title: Summary
     path: sections/section-020/module-02/course-03-summary.md
+  - type: reading
+    title: Deployment Updates, Scaling And Rollback
+    path: sections/section-020/module-03/course.md
+  - type: reading
+    title: Rolling Updates And Rollout Control
+    path: sections/section-020/module-03/course-01-rolling-updates-and-rollout-control.md
+  - type: reading
+    title: Scaling And Rollback
+    path: sections/section-020/module-03/course-02-scaling-and-rollback.md
+  - type: reading
+    title: Recover A Failed Deployment Rollout — Task
+    path: sections/section-020/module-03/labs/lab-01/question.md
+  - type: lab
+    title: Recover A Failed Deployment Rollout
+    path: sections/section-020/module-03/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 20m
+    topic: deployment-rollback
+    task_kind: troubleshoot
+    learning_goals:
+    - Roll back a failed Deployment rollout and verify the restored image.
+    - Set a RollingUpdate strategy with maxUnavailable 0 and scale the Deployment.
+    tags:
+    - ckad
+    - deployment
+    - rollout
+    resources:
+    - name: Deployments
+      url: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+  - type: reading
+    title: Recover A Failed Deployment Rollout — Solution
+    path: sections/section-020/module-03/labs/lab-01/solution.md
+  - type: reading
+    title: Summary
+    path: sections/section-020/module-03/course-03-summary.md
+  - type: reading
+    title: StatefulSets And Stable Identity
+    path: sections/section-020/module-04/course.md
+  - type: reading
+    title: Stable Names And Headless Services
+    path: sections/section-020/module-04/course-01-stable-names-and-headless-services.md
+  - type: reading
+    title: Volume Claim Templates And Ordered Updates
+    path: sections/section-020/module-04/course-02-volume-claim-templates-and-ordered-updates.md
+  - type: reading
+    title: Build A StatefulSet With Per-Pod Storage — Task
+    path: sections/section-020/module-04/labs/lab-01/question.md
+  - type: lab
+    title: Build A StatefulSet With Per-Pod Storage
+    path: sections/section-020/module-04/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: statefulset
+    task_kind: build
+    learning_goals:
+    - Create a StatefulSet with a headless Service and volume claim templates.
+    - Verify ordinal Pod names, per-Pod DNS and data kept after Pod deletion.
+    tags:
+    - ckad
+    - statefulset
+    - storage
+    resources:
+    - name: StatefulSets
+      url: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
+  - type: reading
+    title: Build A StatefulSet With Per-Pod Storage — Solution
+    path: sections/section-020/module-04/labs/lab-01/solution.md
+  - type: reading
+    title: Summary
+    path: sections/section-020/module-04/course-03-summary.md
+  - type: reading
+    title: Job Parallelism, Completion Modes And CronJob Policies
+    path: sections/section-020/module-05/course.md
+  - type: reading
+    title: Completions, Parallelism And Failure Limits
+    path: sections/section-020/module-05/course-01-completions-parallelism-and-failure-limits.md
+  - type: reading
+    title: Run Indexed Jobs And Set CronJob Policies — Task
+    path: sections/section-020/module-05/labs/lab-01/question.md
+  - type: lab
+    title: Run Indexed Jobs And Set CronJob Policies
+    path: sections/section-020/module-05/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: job-cronjob-policies
+    task_kind: build
+    learning_goals:
+    - Replace a Job with an Indexed Job that has set parallelism, retry limits and
+      cleanup.
+    - Set overlap, history, time zone and deadline policies on a CronJob.
+    tags:
+    - ckad
+    - job
+    - cronjob
+    resources:
+    - name: Jobs
+      url: https://kubernetes.io/docs/concepts/workloads/controllers/job/
+    - name: CronJob
+      url: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+  - type: reading
+    title: Run Indexed Jobs And Set CronJob Policies — Solution
+    path: sections/section-020/module-05/labs/lab-01/solution.md
+  - type: reading
+    title: CronJob Schedules And History Policies
+    path: sections/section-020/module-05/course-02-cronjob-schedules-and-history-policies.md
+  - type: reading
+    title: Summary
+    path: sections/section-020/module-05/course-03-summary.md
+  - type: reading
+    title: Choose And Use The Right Workload Resource Capstone — Task
+    path: sections/section-020/capstone/labs/lab-01/question.md
+  - type: lab
+    title: Choose And Use The Right Workload Resource Capstone
+    path: sections/section-020/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 45m
+    topic: workload-kind-selection
+    task_kind: build
+    learning_goals:
+    - Choose a DaemonSet, Deployment, CronJob or StatefulSet from a workload requirement.
+    - Verify the chosen kind by its behaviour, not only its name.
+    tags:
+    - ckad
+    - capstone
+    - workloads
+    resources:
+    - name: Workloads
+      url: https://kubernetes.io/docs/concepts/workloads/controllers/
+    - name: StatefulSets
+      url: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
+    - name: DaemonSet
+      url: https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/
+  - type: reading
+    title: Choose And Use The Right Workload Resource Capstone — Solution
+    path: sections/section-020/capstone/labs/lab-01/solution.md
+  - type: quiz
+    title: 'Knowledge Check: Choose and use the right workload resource (Deployment,
+      DaemonSet, CronJob, etc.)'
+    path: sections/section-020/quiz.yaml
+    pass_score: 70
 - id: module-030
   title: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
   description: Developed explanations and application reasoning for Understand multi-container
     Pod design patterns (e.g. sidecar, init and others).
-  maturity: alpha
+  status: alpha
   content:
   - type: reading
     title: Understand multi-container Pod design patterns (e.g. sidecar, init and
@@ -242,11 +494,122 @@ modules:
   - type: reading
     title: Summary
     path: sections/section-030/module-01/course-04-summary.md
+  - type: reading
+    title: Ambassador And Adapter Patterns
+    path: sections/section-030/module-02/course.md
+  - type: reading
+    title: Ambassador Proxy Over Localhost
+    path: sections/section-030/module-02/course-01-ambassador-proxy-over-localhost.md
+  - type: reading
+    title: Adapter Output Translation
+    path: sections/section-030/module-02/course-02-adapter-output-translation.md
+  - type: reading
+    title: Add An Ambassador And An Adapter To A Legacy Application — Task
+    path: sections/section-030/module-02/labs/lab-01/question.md
+  - type: lab
+    title: Add An Ambassador And An Adapter To A Legacy Application
+    path: sections/section-030/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: ambassador-adapter
+    task_kind: build
+    learning_goals:
+    - Add an ambassador container that forwards localhost calls to a Service using
+      a ConfigMap destination.
+    - Add an adapter container that converts shared-volume output to JSON through
+      a read-only mount.
+    tags:
+    - ckad
+    - ambassador
+    - adapter
+    resources:
+    - name: Multi-container Pods
+      url: https://kubernetes.io/docs/concepts/workloads/pods/#how-pods-manage-multiple-containers
+    - name: Share process namespace and volumes between containers
+      url: https://kubernetes.io/docs/tasks/access-application-cluster/communicate-containers-same-pod-shared-volume/
+  - type: reading
+    title: Add An Ambassador And An Adapter To A Legacy Application — Solution
+    path: sections/section-030/module-02/labs/lab-01/solution.md
+  - type: reading
+    title: Summary
+    path: sections/section-030/module-02/course-03-summary.md
+  - type: reading
+    title: Native Sidecar Containers And Pod Lifecycle
+    path: sections/section-030/module-03/course.md
+  - type: reading
+    title: Restartable Init Containers
+    path: sections/section-030/module-03/course-01-restartable-init-containers.md
+  - type: reading
+    title: Shutdown Order And Jobs With Sidecars
+    path: sections/section-030/module-03/course-02-shutdown-order-and-jobs-with-sidecars.md
+  - type: reading
+    title: Convert A Log Shipper Into A Native Sidecar — Task
+    path: sections/section-030/module-03/labs/lab-01/question.md
+  - type: lab
+    title: Convert A Log Shipper Into A Native Sidecar
+    path: sections/section-030/module-03/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 20m
+    topic: native-sidecar-job
+    task_kind: fix
+    learning_goals:
+    - Convert a never-ending helper container into a native sidecar so that a Job
+      completes.
+    - Explain startup order, shutdown order and the role of the kubelet and the Job
+      controller.
+    tags:
+    - ckad
+    - sidecar
+    - job
+    resources:
+    - name: Sidecar containers
+      url: https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/
+    - name: Init containers
+      url: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  - type: reading
+    title: Convert A Log Shipper Into A Native Sidecar — Solution
+    path: sections/section-030/module-03/labs/lab-01/solution.md
+  - type: reading
+    title: Summary
+    path: sections/section-030/module-03/course-03-summary.md
+  - type: reading
+    title: Multi-Container Pod Design Patterns Capstone — Task
+    path: sections/section-030/capstone/labs/lab-01/question.md
+  - type: lab
+    title: Multi-Container Pod Design Patterns Capstone
+    path: sections/section-030/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 40m
+    topic: multi-container-capstone
+    task_kind: build
+    learning_goals:
+    - Combine an init container, a native sidecar ambassador and an adapter in one
+      Pod.
+    - Order startup with a startupProbe and share data through emptyDir volumes.
+    tags:
+    - ckad
+    - init-container
+    - sidecar
+    - ambassador
+    - adapter
+    resources:
+    - name: Sidecar containers
+      url: https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/
+    - name: Init containers
+      url: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  - type: reading
+    title: Multi-Container Pod Design Patterns Capstone — Solution
+    path: sections/section-030/capstone/labs/lab-01/solution.md
+  - type: quiz
+    title: 'Knowledge Check: Understand multi-container Pod design patterns (e.g.
+      sidecar, init and others)'
+    path: sections/section-030/quiz.yaml
+    pass_score: 70
 - id: module-040
   title: Utilize persistent and ephemeral volumes
   description: Developed explanations and application reasoning for Utilize persistent
     and ephemeral volumes.
-  maturity: alpha
+  status: alpha
   content:
   - type: reading
     title: Utilize persistent and ephemeral volumes
@@ -318,3 +681,112 @@ modules:
   - type: reading
     title: Summary
     path: sections/section-040/module-02/course-04-summary.md
+  - type: reading
+    title: 'Ephemeral Volumes: emptyDir And Generic Ephemeral Volumes'
+    path: sections/section-040/module-03/course.md
+  - type: reading
+    title: emptyDir Medium And Size Limits
+    path: sections/section-040/module-03/course-01-emptydir-medium-and-size-limits.md
+  - type: reading
+    title: Generic Ephemeral Volumes
+    path: sections/section-040/module-03/course-02-generic-ephemeral-volumes.md
+  - type: reading
+    title: Add Ephemeral Volumes To A Deployment — Task
+    path: sections/section-040/module-03/labs/lab-01/question.md
+  - type: lab
+    title: Add Ephemeral Volumes To A Deployment
+    path: sections/section-040/module-03/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: ephemeral-volumes
+    task_kind: build
+    learning_goals:
+    - Add a memory-backed emptyDir with a size limit and a generic ephemeral volume
+      to a Deployment.
+    - Show that a container restart keeps emptyDir data while Pod replacement loses
+      it.
+    tags:
+    - ckad
+    - ephemeral-volumes
+    - emptydir
+    resources:
+    - name: Ephemeral Volumes
+      url: https://kubernetes.io/docs/concepts/storage/ephemeral-volumes/
+    - name: Volumes
+      url: https://kubernetes.io/docs/concepts/storage/volumes/
+  - type: reading
+    title: Add Ephemeral Volumes To A Deployment — Solution
+    path: sections/section-040/module-03/labs/lab-01/solution.md
+  - type: reading
+    title: Summary
+    path: sections/section-040/module-03/course-03-summary.md
+  - type: reading
+    title: ConfigMap, Secret, Projected And Downward API Volumes
+    path: sections/section-040/module-04/course.md
+  - type: reading
+    title: ConfigMap And Secret Volumes
+    path: sections/section-040/module-04/course-01-configmap-and-secret-volumes.md
+  - type: reading
+    title: Projected And Downward API Volumes
+    path: sections/section-040/module-04/course-02-projected-and-downward-api-volumes.md
+  - type: reading
+    title: Deliver Configuration Through One Projected Volume — Task
+    path: sections/section-040/module-04/labs/lab-01/question.md
+  - type: lab
+    title: Deliver Configuration Through One Projected Volume
+    path: sections/section-040/module-04/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: projected-volumes
+    task_kind: build
+    learning_goals:
+    - Merge a ConfigMap, a Secret and downward API files into one projected volume
+      with specific file modes.
+    tags:
+    - ckad
+    - projected-volumes
+    - downward-api
+    resources:
+    - name: Projected Volumes
+      url: https://kubernetes.io/docs/concepts/storage/projected-volumes/
+    - name: Downward API
+      url: https://kubernetes.io/docs/concepts/workloads/pods/downward-api/
+  - type: reading
+    title: Deliver Configuration Through One Projected Volume — Solution
+    path: sections/section-040/module-04/labs/lab-01/solution.md
+  - type: reading
+    title: Summary
+    path: sections/section-040/module-04/course-03-summary.md
+  - type: reading
+    title: Persistent And Ephemeral Volumes Capstone — Task
+    path: sections/section-040/capstone/labs/lab-01/question.md
+  - type: lab
+    title: Persistent And Ephemeral Volumes Capstone
+    path: sections/section-040/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 40m
+    topic: persistent-ephemeral-volumes
+    task_kind: build
+    learning_goals:
+    - Repair a workload that combines a claim, an emptyDir and a projected configuration
+      volume.
+    tags:
+    - ckad
+    - capstone
+    - volumes
+    resources:
+    - name: Persistent Volumes
+      url: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+    - name: Volumes
+      url: https://kubernetes.io/docs/concepts/storage/volumes/
+  - type: reading
+    title: Persistent And Ephemeral Volumes Capstone — Solution
+    path: sections/section-040/capstone/labs/lab-01/solution.md
+  - type: quiz
+    title: 'Knowledge Check: Utilize persistent and ephemeral volumes'
+    path: sections/section-040/quiz.yaml
+    pass_score: 70
+  - type: quiz
+    title: 'Final Knowledge Check: Application Design and Build'
+    path: sections/final-domain-quiz.yaml
+    pass_score: 70

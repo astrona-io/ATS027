@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uplink-config
+  namespace: starfleet
+data:
+  upstream.txt: "http://probe.starfleet.svc.cluster.local"

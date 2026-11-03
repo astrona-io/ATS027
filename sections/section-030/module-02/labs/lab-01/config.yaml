@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Add An Ambassador And An Adapter To A Legacy Application (LAB). Graded against the live cluster.
+# UNTESTED: written statically, never run.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-027-lab-030-02-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    preloadImages:
+      - docker.io/library/busybox:1.37.0
+      - docker.io/library/python:3.13-alpine
+
+# Starting state: the probe Service, the ambassador code, an uplink-config that
+# points at the wrong namespace and the legacy application with no helper.
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the probe Service, the ambassador code and the legacy application
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+# Applied only by `astrona test`: the reference solution.
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the reference solution
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: ambassador-answers-on-localhost
+      description: The legacy container gets the probe answer on 127.0.0.1:9000
+      type: file
+      source: validation/validate-ambassador-answers.sh
+      hint: Add a container that runs /code/proxy.py from the ambassador-code ConfigMap and listens on 127.0.0.1:9000, and fix the destination in uplink-config.
+    - name: report-records-success
+      description: The legacy application writes status=ok to its report
+      type: file
+      source: validation/validate-report-status-ok.sh
+      hint: The application writes status=ok only when its call to localhost succeeds. Check the logs of the ambassador and the value in uplink-config.
+    - name: destination-from-configmap
+      description: The ambassador reads its destination from uplink-config, which names the probe Service in starfleet
+      type: file
+      source: validation/validate-upstream-from-configmap.sh
+      hint: Mount uplink-config at /etc/ambassador in the ambassador container and set upstream.txt to http://probe.starfleet.svc.cluster.local.
+    - name: adapter-prints-json
+      description: A container named adapter prints the report as JSON lines
+      type: file
+      source: validation/validate-adapter-json.sh
+      hint: Follow /report/report.txt with tail -F and rewrite each key=value line as {"key":"value"} with sed.
+    - name: adapter-readonly-legacy-unchanged
+      description: The adapter mounts the report read-only and the legacy container is unchanged
+      type: file
+      source: validation/validate-adapter-readonly-legacy-unchanged.sh
+      hint: Put readOnly true on the adapter volume mount and do not edit the legacy container.
+
+teardown:
+  keepCluster: false

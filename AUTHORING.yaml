@@ -1,5 +1,6 @@
 version: 1
-approval: CKAD playgrounds and guided practice requested 2026-10-12; no new graded labs.
+approval: Maintainer requested continued CKAD playground and graded lab development
+  on 2026-10-13, extending the 2026-10-12 playground scope.
 course:
   id: ATS027
   certification:
@@ -10,7 +11,8 @@ course:
     weight: 20
     competencies:
     - Define, build and modify container images
-    - Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
+    - Choose and use the right workload resource (Deployment, DaemonSet, CronJob,
+      etc.)
     - Understand multi-container Pod design patterns (e.g. sidecar, init and others)
     - Utilize persistent and ephemeral volumes
 defaults:
@@ -39,7 +41,7 @@ sections:
     - From Build To Image Pull
     - Inspect Image References And Running Content Identity
     playground: true
-    module_lab: false
+    module_lab: true
     sources:
     - reading: sections/section-010/module-01/course-01-layers-tags-and-digests.md
       adapted_from: ATS037/sections/section-040/module-02/course-01-layers-tags-and-digests.md
@@ -49,6 +51,14 @@ sections:
       adapted_from: null
     practice_readings:
     - sections/section-010/module-01/course-03-guided-practice.md
+    labs:
+    - id: lab-01
+      path: sections/section-010/module-01/labs/lab-01
+      after_reading: sections/section-010/module-01/course-02-from-build-to-image-pull.md
+      objective: Distinguish a requested image reference from the identity reported
+        for a running container.
+      status: draft
+      runtime_verification: pending
   - id: module-02
     title: The Image Build And Runtime Contract
     objectives:
@@ -60,7 +70,7 @@ sections:
     - Building An Image With A Clear Runtime Contract
     - Build And Load A Non-Root Application Image
     playground: true
-    module_lab: false
+    module_lab: true
     sources:
     - reading: sections/section-010/module-02/course-01-building-an-image-with-a-clear-runtime-contract.md
       adapted_from: null
@@ -68,9 +78,19 @@ sections:
       adapted_from: null
     practice_readings:
     - sections/section-010/module-02/course-02-guided-practice.md
+    labs:
+    - id: lab-01
+      path: sections/section-010/module-02/labs/lab-01
+      after_reading: sections/section-010/module-02/course-01-building-an-image-with-a-clear-runtime-contract.md
+      objective: Build a local image, load it into the private cluster and verify
+        its user and response.
+      status: draft
+      runtime_verification: pending
 - id: section-020
-  title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
-  curriculum_item: Choose and use the right workload resource (Deployment, DaemonSet, CronJob, etc.)
+  title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob,
+    etc.)
+  curriculum_item: Choose and use the right workload resource (Deployment, DaemonSet,
+    CronJob, etc.)
   capstone: false
   section_quiz: true
   modules:
@@ -86,7 +106,7 @@ sections:
     - Choosing Deployments, DaemonSets And StatefulSets
     - Compare Deployment And DaemonSet Ownership
     playground: true
-    module_lab: false
+    module_lab: true
     sources:
     - reading: sections/section-020/module-01/course-01-managing-long-running-workloads.md
       adapted_from: ATS037/sections/section-010/module-04/course-01-managing-long-running-workloads.md
@@ -96,6 +116,14 @@ sections:
       adapted_from: null
     practice_readings:
     - sections/section-020/module-01/course-03-guided-practice.md
+    labs:
+    - id: lab-01
+      path: sections/section-020/module-01/labs/lab-01
+      after_reading: sections/section-020/module-01/course-02-choosing-deployments-daemonsets-and-statefulsets.md
+      objective: Choose DaemonSet ownership for a workload that must cover each eligible
+        node.
+      status: draft
+      runtime_verification: pending
   - id: module-02
     title: Finite And Scheduled Application Work
     objectives:
@@ -107,7 +135,7 @@ sections:
     - Jobs, Retries And Scheduled Work
     - Complete A Job And Trigger Scheduled Work Deliberately
     playground: true
-    module_lab: false
+    module_lab: true
     sources:
     - reading: sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
       adapted_from: null
@@ -115,9 +143,25 @@ sections:
       adapted_from: null
     practice_readings:
     - sections/section-020/module-02/course-02-guided-practice.md
+    labs:
+    - id: lab-01
+      path: sections/section-020/module-02/labs/lab-01
+      objective: Run finite work with a Job and verify successful completion and its
+        log.
+      status: draft
+      runtime_verification: pending
+      after_reading: sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
+    - id: lab-02
+      path: sections/section-020/module-02/labs/lab-02
+      after_reading: sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
+      objective: Declare a schedule and deliberately run its template once without
+        waiting for the clock.
+      status: draft
+      runtime_verification: pending
 - id: section-030
   title: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
-  curriculum_item: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
+  curriculum_item: Understand multi-container Pod design patterns (e.g. sidecar, init
+    and others)
   capstone: false
   section_quiz: true
   modules:
@@ -133,7 +177,7 @@ sections:
     - Sharing Pod Resources Without Sharing Every Assumption
     - Observe Initialization And Shared Pod Storage
     playground: true
-    module_lab: false
+    module_lab: true
     sources:
     - reading: sections/section-030/module-01/course-01-init-containers-and-sidecar-patterns.md
       adapted_from: ATS037/sections/section-040/module-03/course-02-init-containers-and-sidecar-patterns.md
@@ -143,6 +187,14 @@ sections:
       adapted_from: null
     practice_readings:
     - sections/section-030/module-01/course-03-guided-practice.md
+    labs:
+    - id: lab-01
+      path: sections/section-030/module-01/labs/lab-01
+      after_reading: sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
+      objective: Complete initialization before two ordinary containers read the same
+        Pod volume.
+      status: draft
+      runtime_verification: pending
 - id: section-040
   title: Utilize persistent and ephemeral volumes
   curriculum_item: Utilize persistent and ephemeral volumes
@@ -161,7 +213,7 @@ sections:
     - Provisioning, Classes And Drivers
     - Compare Pod-Lifetime And Claim-Lifetime Data
     playground: true
-    module_lab: false
+    module_lab: true
     sources:
     - reading: sections/section-040/module-01/course-01-storage-lifecycles-and-claims.md
       adapted_from: ATS038/sections/section-040/module-01/course-01-storage-lifecycles-and-claims.md
@@ -171,6 +223,14 @@ sections:
       adapted_from: null
     practice_readings:
     - sections/section-040/module-01/course-03-guided-practice.md
+    labs:
+    - id: lab-01
+      path: sections/section-040/module-01/labs/lab-01
+      after_reading: sections/section-040/module-01/course-02-provisioning-classes-and-drivers.md
+      objective: Observe persistent data surviving replacement while Pod-lifetime
+        scratch data disappears.
+      status: draft
+      runtime_verification: pending
   - id: module-02
     title: Access Modes And Data Retention
     objectives:
@@ -183,7 +243,7 @@ sections:
     - Reclaim Policies And Recovery
     - Inspect Access Modes And Change Reclaim Policy Safely
     playground: true
-    module_lab: false
+    module_lab: true
     sources:
     - reading: sections/section-040/module-02/course-01-access-modes-and-data-presentation.md
       adapted_from: ATS038/sections/section-040/module-02/course-01-access-modes-and-data-presentation.md
@@ -193,3 +253,11 @@ sections:
       adapted_from: null
     practice_readings:
     - sections/section-040/module-02/course-03-guided-practice.md
+    labs:
+    - id: lab-01
+      path: sections/section-040/module-02/labs/lab-01
+      after_reading: sections/section-040/module-02/course-02-reclaim-policies-and-recovery.md
+      objective: Change a bound volume reclaim policy while preserving its active
+        claim and consumer.
+      status: draft
+      runtime_verification: pending

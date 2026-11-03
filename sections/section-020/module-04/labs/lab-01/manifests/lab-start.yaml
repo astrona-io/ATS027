@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: outpost
+---
+# A normal Service with a cluster IP. It does not give each Pod its own DNS name.
+apiVersion: v1
+kind: Service
+metadata:
+  name: shuttle
+  namespace: starfleet
+spec:
+  selector:
+    app: shuttle
+  ports:
+  - name: tcp
+    port: 8080

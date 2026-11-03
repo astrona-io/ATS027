@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: probe-scan
+  namespace: starfleet
+spec:
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: scan
+        image: docker.io/library/busybox:1.37.0
+        command: ["sh", "-c", "echo scanned everything"]
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: shuttle-report
+  namespace: starfleet
+spec:
+  schedule: "0 6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: report
+            image: docker.io/library/busybox:1.37.0
+            command: ["sh", "-c", "echo report written"]

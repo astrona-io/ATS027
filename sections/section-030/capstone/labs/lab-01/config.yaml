@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Multi-Container Pod Design Patterns Capstone (LAB). Graded against the live cluster.
+# UNTESTED: written statically, never run.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-027-lab-030-capstone
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    preloadImages:
+      - docker.io/library/busybox:1.37.0
+      - docker.io/library/python:3.13-alpine
+
+# Starting state: the probe Service, the ambassador code and the legacy
+# application as a single container that fails every call.
+bootstrap:
+  init:
+    - name: seed-cluster
+      description: Create the probe Service, the ambassador code and the legacy application
+      type: file
+      source: bootstrap/01-seed-cluster.sh
+
+# Applied only by `astrona test`: the reference solution.
+testing:
+  init:
+    - name: apply-solution
+      description: Apply the reference solution
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: init-then-sidecar
+      description: fetch-config is an ordinary init container, followed by the ambassador sidecar with a startupProbe
+      type: file
+      source: validation/validate-init-then-sidecar.sh
+      hint: Put fetch-config first in initContainers, then ambassador with restartPolicy Always and a startupProbe on its healthz path.
+    - name: pod-running-ready
+      description: The Deployment is rolled out, the Pod is Ready and the sidecar has started
+      type: file
+      source: validation/validate-pod-running-ready.sh
+      hint: Run kubectl describe pod and read the init container states. A startupProbe that never succeeds keeps the Pod in Init.
+    - name: upstream-written-by-init
+      description: /shared/upstream.txt holds the probe Service address
+      type: file
+      source: validation/validate-upstream-written-by-init.sh
+      hint: fetch-config must write the address to /shared/upstream.txt on an emptyDir volume that the ambassador also mounts, and the ambassador needs UPSTREAM_FILE.
+    - name: clean-start
+      description: The report has status=ok and never status=error
+      type: file
+      source: validation/validate-clean-start.sh
+      hint: The application must start only after the ambassador is ready. Give the sidecar a startupProbe.
+    - name: adapter-json-readonly
+      description: The adapter prints JSON lines and mounts the report read-only
+      type: file
+      source: validation/validate-adapter-json-readonly.sh
+      hint: Follow /report/report.txt with tail -F, rewrite lines with sed, and set readOnly true on the mount.
+    - name: legacy-unchanged
+      description: The legacy container is unchanged
+      type: file
+      source: validation/validate-legacy-unchanged.sh
+      hint: Do not edit the legacy container. Add the helpers around it.
+
+teardown:
+  keepCluster: false

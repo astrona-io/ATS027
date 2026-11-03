@@ -1,0 +1,50 @@
+# Indexed Job and CronJob policies (LAB). UNTESTED: written statically, never run.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-027-lab-020-05-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    preloadImages:
+    - docker.io/library/busybox:1.37.0
+bootstrap:
+  init:
+  - name: seed-cluster
+    description: Create the namespace, a finished non-indexed Job and a CronJob with default policies
+    type: file
+    source: bootstrap/01-seed-cluster.sh
+testing:
+  init:
+  - name: apply-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: indexed-job-spec
+    description: probe-scan is an Indexed Job with the required counts and limits
+    type: file
+    source: validation/validate-indexed-job-spec.sh
+    hint: Job fields cannot be changed after creation. Delete probe-scan and create it again with completionMode Indexed, completions 3, parallelism 2, backoffLimit 2, ttlSecondsAfterFinished 600 and restartPolicy Never.
+  - name: indexed-job-completed
+    description: probe-scan finished with indexes 0 to 2 and each Pod printed its slice
+    type: file
+    source: validation/validate-indexed-job-completed.sh
+    hint: The container must print "scanned slice" followed by the value of JOB_COMPLETION_INDEX.
+  - name: cronjob-policies
+    description: shuttle-report has the required overlap, history, time zone and deadline settings
+    type: file
+    source: validation/validate-cronjob-policies.sh
+    hint: Set concurrencyPolicy Forbid, successfulJobsHistoryLimit 2, failedJobsHistoryLimit 1, timeZone Europe/Copenhagen and startingDeadlineSeconds 120. Keep the schedule 0 6 * * *.
+  - name: cronjob-runs
+    description: A Job created from shuttle-report completes
+    type: file
+    source: validation/validate-cronjob-runs.sh
+    hint: The CronJob must not be suspended and its job template must still run to completion.
+teardown:
+  keepCluster: false

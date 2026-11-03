@@ -66,6 +66,25 @@ This provides another observed start. If the tag remains cached under IfNotPrese
 
 An immutable content reference can improve repeatability, while a tag remains useful selection metadata. Image identity does not prove the application is safe or configured correctly. Preserve the difference between desired reference, downloaded content and runtime health.
 
+## What each observation proves
+
+Each command above reads from a different component, so each result proves a different fact. The Deployment spec is stored in the API server and records only what the user asked for: an image reference and a pull policy. The `imageID` field in the Pod status comes from the kubelet, which copies it from the container runtime after the runtime pulled and started the image. The host `podman image inspect` command reads the local image store of the host, which is not a node of the cluster.
+
+Read the three results in that order. If the spec holds only a tag, the tag tells you what the user selected but not which content ran. If the `imageID` holds a `sha256` digest, it tells you the content that this one container started from. If two Pods of the same Deployment report different digests, the nodes pulled the tag at different times and the tag moved between the pulls.
+
+This reading also shows what an image identity does not prove. A matching digest says the bytes of the image are the same. It does not say that the configuration, the mounted volumes or the environment variables are the same, and those inputs change what the process does at run time. Compare the artifact and the runtime inputs separately when two Pods behave differently from the same image.
+
+
+## Pull policy decides whether the registry is asked
+
+The kubelet reads `imagePullPolicy` from the container spec each time it starts a container. With `Always`, it asks the registry to resolve the tag to a digest on every start and downloads only the layers it does not already hold. With `IfNotPresent`, it uses an image stored on the node when one exists under that name, and asks the registry only when none exists. With `Never`, it never contacts a registry and fails with `ErrImageNeverPull` when the image is missing.
+
+When the field is not set, the API server fills in a default at admission time: `Always` when the tag is `latest` or there is no tag, and `IfNotPresent` for every other tag. Read the value with the first jsonpath command above rather than assuming it, because the defaulted value is stored in the spec.
+
+A reference of the form `name@sha256:<digest>` removes the movable part. The runtime resolves it to exactly one manifest, so every node that starts the container runs the same image content, whatever the pull policy is. This is the strongest way to make two starts comparable, and it is the form that the `imageID` field reports.
+
+After you compare the results, state the conclusion in one sentence for each source: what the spec requested, what the runtime started, and what the host stores.
+
 ## Common pitfalls
 
 > [!WARNING]

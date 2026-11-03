@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scout-settings
+  namespace: starfleet
+data:
+  app.properties: |
+    mode=survey
+    interval=30
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: scout-credentials
+  namespace: starfleet
+type: Opaque
+stringData:
+  api-key: starfleet-key-001
+---
+# scout reads its files under /etc/scout. It only has the settings file, from
+# a plain ConfigMap volume, so it reports config-missing.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout
+  namespace: starfleet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout
+  template:
+    metadata:
+      labels:
+        app: scout
+        tier: edge
+    spec:
+      containers:
+        - name: app
+          image: docker.io/library/busybox:1.37.0
+          command:
+            - sh
+            - -c
+            - |
+              while true; do
+                if [ -s /etc/scout/settings/app.properties ] && [ -s /etc/scout/secret/api-key ] && [ -s /etc/scout/meta/labels ] && [ -s /etc/scout/meta/memory-limit ]; then
+                  echo "config-complete memory=$(cat /etc/scout/meta/memory-limit)Mi"
+                else
+                  echo "config-missing"
+                fi
+                sleep 5
+              done
+          resources:
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: settings
+              mountPath: /etc/scout/settings
+      volumes:
+        - name: settings
+          configMap:
+            name: scout-settings
