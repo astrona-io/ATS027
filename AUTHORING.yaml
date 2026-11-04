@@ -57,7 +57,7 @@ sections:
       after_reading: sections/section-010/module-01/course-02-from-build-to-image-pull.md
       objective: Distinguish a requested image reference from the identity reported
         for a running container.
-      status: draft
+      status: alpha
       runtime_verification: pending
   - id: module-02
     title: The Image Build And Runtime Contract
@@ -84,7 +84,7 @@ sections:
       after_reading: sections/section-010/module-02/course-01-building-an-image-with-a-clear-runtime-contract.md
       objective: Build a local image, load it into the private cluster and verify
         its user and response.
-      status: draft
+      status: alpha
       runtime_verification: pending
 - id: section-020
   title: Choose and use the right workload resource (Deployment, DaemonSet, CronJob,
@@ -122,7 +122,7 @@ sections:
       after_reading: sections/section-020/module-01/course-02-choosing-deployments-daemonsets-and-statefulsets.md
       objective: Choose DaemonSet ownership for a workload that must cover each eligible
         node.
-      status: draft
+      status: alpha
       runtime_verification: pending
   - id: module-02
     title: Finite And Scheduled Application Work
@@ -148,7 +148,7 @@ sections:
       path: sections/section-020/module-02/labs/lab-01
       objective: Run finite work with a Job and verify successful completion and its
         log.
-      status: draft
+      status: alpha
       runtime_verification: pending
       after_reading: sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
     - id: lab-02
@@ -156,7 +156,7 @@ sections:
       after_reading: sections/section-020/module-02/course-01-jobs-retries-and-scheduled-work.md
       objective: Declare a schedule and deliberately run its template once without
         waiting for the clock.
-      status: draft
+      status: alpha
       runtime_verification: pending
 - id: section-030
   title: Understand multi-container Pod design patterns (e.g. sidecar, init and others)
@@ -193,7 +193,7 @@ sections:
       after_reading: sections/section-030/module-01/course-02-sharing-pod-resources-without-sharing-every-assumption.md
       objective: Complete initialization before two ordinary containers read the same
         Pod volume.
-      status: draft
+      status: alpha
       runtime_verification: pending
 - id: section-040
   title: Utilize persistent and ephemeral volumes
@@ -229,7 +229,7 @@ sections:
       after_reading: sections/section-040/module-01/course-02-provisioning-classes-and-drivers.md
       objective: Observe persistent data surviving replacement while Pod-lifetime
         scratch data disappears.
-      status: draft
+      status: alpha
       runtime_verification: pending
   - id: module-02
     title: Access Modes And Data Retention
@@ -259,5 +259,5 @@ sections:
       after_reading: sections/section-040/module-02/course-02-reclaim-policies-and-recovery.md
       objective: Change a bound volume reclaim policy while preserving its active
         claim and consumer.
-      status: draft
+      status: alpha
       runtime_verification: pending

@@ -3,7 +3,7 @@ kind: question_bank
 id: ats027-section-040
 course_id: ATS027
 exam_code: CKAD
-status: draft
+status: alpha
 provenance: Original practice material; not official examination questions.
 scope:
   type: section
