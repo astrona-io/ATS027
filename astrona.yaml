@@ -329,7 +329,7 @@ modules:
     difficulty: intermediate
     estimated_duration: 20m
     topic: deployment-rollback
-    task_kind: troubleshoot
+    task_kind: troubleshooting
     learning_goals:
     - Roll back a failed Deployment rollout and verify the restored image.
     - Set a RollingUpdate strategy with maxUnavailable 0 and scale the Deployment.
@@ -551,7 +551,7 @@ modules:
     difficulty: intermediate
     estimated_duration: 20m
     topic: native-sidecar-job
-    task_kind: fix
+    task_kind: troubleshooting
     learning_goals:
     - Convert a never-ending helper container into a native sidecar so that a Job
       completes.
